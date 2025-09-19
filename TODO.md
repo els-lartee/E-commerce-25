@@ -1,38 +1,21 @@
-# Customer Registration Implementation Plan
+# Customer Login Functionality Implementation
 
-## 1. Rename and update classes/user_class.php to customer_class.php
-- [x] Change class name to Customer
-- [x] Update createUser to include country, city parameters
-- [x] Add edit_customer method (update customer details)
-- [x] Add delete_customer method
-- [x] Add check_email_exists method for uniqueness
+## Tasks to Complete
 
-## 2. Rename and update controllers/user_controller.php to customer_controller.php
-- [x] Change function names to register_customer_ctr, edit_customer_ctr, delete_customer_ctr, check_email_ctr
+### 1. Update Customer Class (classes/customer_class.php)
+- [x] Add verifyCustomerLogin($email, $password) method to get customer by email and verify password hash
 
-## 3. Rename and update actions/register_user_action.php to register_customer_action.php
-- [x] Update includes and function calls
-- [x] Add handling for country, city in POST data
+### 2. Update Customer Controller (controllers/customer_controller.php)
+- [x] Add login_customer_ctr($email, $password) method to invoke class method and return response
 
-## 4. Update js/register.js
-- [x] Add country, city fields validation
-- [x] Add regex for email (valid email format) and phone (digits, length)
-- [x] Add async check for email uniqueness before submission
-- [x] Add loading spinner on register button
-- [x] Validate field lengths (e.g., name 100, email 50, pass 150, contact 15, country/city 30)
+### 3. Create Login Action Script (actions/login_customer_action.php)
+- [x] Create new file with session handling, POST data reception, controller invocation, session variable setting, and JSON response
 
-## 5. Update login/register.php
-- [x] Add country, city input fields
-- [x] Ensure no form action (handled by JS)
+### 4. Create Login JavaScript (js/login.js)
+- [x] Create new file with form validation (email regex, password check) and asynchronous submission to login action
 
-## 6. Update login/login.php
-- [x] No changes needed (simple form as required)
+### 5. Update Login Form (login/login.php)
+- [x] Ensure form has proper id, includes js/login.js, and has placeholders for alert messages
 
-## 7. Update index.php
-- [x] Already has menu tray with Register/Login buttons
-
-## Followup steps
-- [ ] Test registration with all fields
-- [ ] Verify email uniqueness check
-- [ ] Ensure redirect to login on success
-- [ ] Check database insertion with correct fields
+### 6. Update Index Menu (index.php)
+- [x] Modify menu to show Logout button when user is logged in (check session variables)

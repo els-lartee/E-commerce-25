@@ -17,7 +17,7 @@ if (!defined("USERNAME")) {
 }
 
 if (!defined("PASSWD")) {
-    define("PASSWD", "1912.Elsie");
+    define("PASSWD", "");
 }
 
 if (!defined("DATABASE")) {
