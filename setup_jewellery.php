@@ -3,27 +3,29 @@ require_once 'settings/db_class.php';
 require_once 'settings/db_cred.php';
 
 $conn = new db_connection();
-$db = $conn->db_connect();
+if (!$conn->db_connect()) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 
 try {
-    // Rename table
-    $db->query("RENAME TABLE categories TO jewellery");
+    // Drop foreign key constraint if exists
+    $conn->db_write_query("ALTER TABLE products DROP FOREIGN KEY IF EXISTS products_ibfk_1");
     
-    // Rename fields if needed (assuming cat_id and cat_name exist)
-    $db->query("ALTER TABLE jewellery CHANGE cat_id id INT AUTO_INCREMENT PRIMARY KEY");
-    $db->query("ALTER TABLE jewellery CHANGE cat_name name VARCHAR(100) NOT NULL");
+    // Drop tables if exist
+    $conn->db_write_query("DROP TABLE IF EXISTS jewellery");
+    $conn->db_write_query("DROP TABLE IF EXISTS categories");
     
-    // Ensure user_id exists (if not, add it)
-    $result = $db->query("SHOW COLUMNS FROM jewellery LIKE 'user_id'");
-    if ($result->num_rows == 0) {
-        $db->query("ALTER TABLE jewellery ADD COLUMN user_id INT DEFAULT 0 AFTER name");
+    // Create new jewellery table
+    if (!$conn->db_write_query("CREATE TABLE jewellery (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        user_id INT NOT NULL,
+        UNIQUE KEY unique_jewellery (name, user_id)
+    )")) {
+        die("Failed to create jewellery table: " . mysqli_error($conn->db) . "\n");
     }
     
-    // Drop old unique if exists, add composite unique on (name, user_id)
-    $db->query("ALTER TABLE jewellery DROP INDEX IF EXISTS cat_name");
-    $db->query("ALTER TABLE jewellery ADD UNIQUE KEY unique_jewellery (name, user_id)");
-    
-    echo "Database updated successfully: Table renamed to 'jewellery' with fields id (AUTO_INCREMENT), name, user_id (unique on name+user_id).\n";
+    echo "Database updated successfully: Created 'jewellery' table with fields id (AUTO_INCREMENT), name, user_id (unique on name+user_id).\n";
 } catch (Exception $e) {
     echo "Error: " . $e->getMessage() . "\n";
 }

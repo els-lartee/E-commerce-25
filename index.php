@@ -31,7 +31,7 @@ require_once 'settings/core.php';
 		<?php if (isset($_SESSION['user_id'])): ?>
 			<span class="me-2">Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</span>
 			<?php if (is_admin()): ?>
-				<a href="admin/category.php" class="btn btn-sm btn-outline-info">Category</a>
+				<a href="admin/jewellery.php" class="btn btn-sm btn-outline-info">Jewellery</a>
 			<?php endif; ?>
 			<a href="login/logout.php" class="btn btn-sm btn-outline-danger">Logout</a>
 		<?php else: ?>

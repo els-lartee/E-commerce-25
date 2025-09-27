@@ -25,8 +25,9 @@ $(document).ready(function() {
                     Swal.fire('Error', response.message, 'error');
                 }
             },
-            error: function() {
-                Swal.fire('Error', 'An error occurred while adding the category.', 'error');
+            error: function(xhr, status, error) {
+                console.error('Add category error:', xhr.responseText, status, error);
+                Swal.fire('Error', 'An error occurred while adding the category: ' + (xhr.responseJSON ? xhr.responseJSON.message : error), 'error');
             }
         });
     });
@@ -55,8 +56,9 @@ $(document).ready(function() {
                     Swal.fire('Error', response.message, 'error');
                 }
             },
-            error: function() {
-                Swal.fire('Error', 'An error occurred while updating the category.', 'error');
+            error: function(xhr, status, error) {
+                console.error('Update category error:', xhr.responseText, status, error);
+                Swal.fire('Error', 'An error occurred while updating the category: ' + (xhr.responseJSON ? xhr.responseJSON.message : error), 'error');
             }
         });
     });
@@ -89,8 +91,9 @@ $(document).ready(function() {
                             Swal.fire('Error', response.message, 'error');
                         }
                     },
-                    error: function() {
-                        Swal.fire('Error', 'An error occurred while deleting the category.', 'error');
+                    error: function(xhr, status, error) {
+                        console.error('Delete category error:', xhr.responseText, status, error);
+                        Swal.fire('Error', 'An error occurred while deleting the category: ' + (xhr.responseJSON ? xhr.responseJSON.message : error), 'error');
                     }
                 });
             }
@@ -134,8 +137,9 @@ function fetchCategories() {
                 $('#categoriesTable tbody').html('<tr><td colspan="3">No categories found.</td></tr>');
             }
         },
-        error: function() {
-            $('#categoriesTable tbody').html('<tr><td colspan="3">Error loading categories.</td></tr>');
+        error: function(xhr, status, error) {
+            console.error('Fetch categories error:', xhr.responseText, status, error);
+            $('#categoriesTable tbody').html('<tr><td colspan="3">Error loading categories: ' + (xhr.responseJSON ? xhr.responseJSON.message : error) + '</td></tr>');
         }
     });
 }

@@ -1,5 +1,5 @@
-// Settings/core.php
 <?php
+// Settings/core.php
 
 //for header redirection
 ob_start();
