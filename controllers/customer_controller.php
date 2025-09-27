@@ -51,7 +51,12 @@ function login_customer_ctr($email, $password) {
             return $data;
         }
 
-        // Case 2: Plain text password in DB (legacy)
+        // Case 2: MD5 hashed password in DB (legacy)
+        if (md5($password) === $db_pass) {
+            return $data;
+        }
+
+        // Case 3: Plain text password in DB (legacy)
         if ($password === $db_pass) {
             return $data;
         }
