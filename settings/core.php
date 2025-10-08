@@ -16,7 +16,7 @@ function get_user_id() {
 
 //function to check for role (admin, customer, etc)
 function is_admin() {
-    return isset($_SESSION['user_role']) && $_SESSION['user_role'] == 1;
+    return isset($_SESSION['user_role']) && $_SESSION['user_role'] == 2;
 }
 
 ?>
