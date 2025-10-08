@@ -59,7 +59,8 @@ class Customer extends db_connection
                 (customer_name, customer_email, customer_pass, customer_country, customer_city, customer_contact, user_role) 
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
-        $stmt->bind_param("sssssssi", $name, $email, $hashed_password, $country, $city, $phone_number, $role);
+            $role = (int)$role;
+            $stmt->bind_param("ssssssi", $name, $email, $hashed_password, $country, $city, $phone_number, $role);
         if ($stmt->execute()) {
             return $this->db->insert_id;
         }

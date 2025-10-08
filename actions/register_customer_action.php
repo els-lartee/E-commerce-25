@@ -24,12 +24,7 @@ $city = $_POST['city'];
 $phone_number = $_POST['phone_number'];
 $role = $_POST['role'];
 
-$customer = check_email_ctr($email);
-if ($customer) {
-    $response['status'] = 'error';
-    $response['message'] = 'Email already exists';
-    echo json_encode($response);
-}
+
 
 $customer_id = register_customer_ctr($name, $email, $password, $country, $city, $phone_number, $role);
 
