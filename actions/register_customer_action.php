@@ -2,7 +2,7 @@
 
 header('Content-Type: application/json');
 
-session_start();
+// session_start();
 
 $response = array();
 
@@ -29,7 +29,6 @@ if ($customer) {
     $response['status'] = 'error';
     $response['message'] = 'Email already exists';
     echo json_encode($response);
-    exit();
 }
 
 $customer_id = register_customer_ctr($name, $email, $password, $country, $city, $phone_number, $role);
