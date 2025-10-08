@@ -38,3 +38,5 @@ if ($customer_id) {
 }
 
 echo json_encode($response);
+
+exit();
