@@ -29,7 +29,7 @@ $role = $_POST['role'];
 $customer_id = register_customer_ctr($name, $email, $password, $country, $city, $phone_number, $role);
 
 if ($customer_id) {
-    $response['status'] = 'success';
+    $response['status'] = true;
     $response['message'] = 'Registered successfully';
     $response['customer_id'] = $customer_id;
 } else {
