@@ -123,7 +123,7 @@ $(document).ready(function() {
                             role: role
                         },
                         success: function(response) {
-                            response = JSON.parse(response);  
+                            console.log(response); // Debugging line 
                             if (response.status === 'success') {
                                 Swal.fire({
                                     icon: 'success',
