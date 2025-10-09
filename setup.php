@@ -77,7 +77,7 @@ if ($check->get_result()->num_rows == 0) {
     $country = 'Country';
     $city = 'City';
     $contact = '1234567890';
-    $role = 1;
+    $role = 2;
     $insert = $db->db->prepare("INSERT INTO customer (customer_name, customer_email, customer_pass, customer_country, customer_city, customer_contact, user_role) VALUES (?, ?, MD5(?), ?, ?, ?, ?)");
     $insert->bind_param("ssssssi", $name, $email, $pass, $country, $city, $contact, $role);
     $insert->execute();
