@@ -18,8 +18,12 @@ if (!class_exists('db_connection')) {
          **/
         function db_connect()
         {
-            //connection
-            $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE);
+            //connection (include port if defined)
+            if (defined('PORT') && PORT) {
+                $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE, PORT);
+            } else {
+                $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE);
+            }
 
             //test the connection
             if (mysqli_connect_errno()) {
@@ -31,8 +35,12 @@ if (!class_exists('db_connection')) {
 
         function db_conn()
         {
-            //connection
-            $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE);
+            //connection (include port if defined)
+            if (defined('PORT') && PORT) {
+                $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE, PORT);
+            } else {
+                $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE);
+            }
 
             //test the connection
             if (mysqli_connect_errno()) {

@@ -1,121 +1,91 @@
 <?php
 
-require_once dirname(__DIR__) . '/settings/db_class.php';
+require_once '../settings/db_class.php';
 
-/**
- * Brand class for managing brand operations
- */
 class Brand extends db_connection
 {
-    private $id;
-    private $name;
-    private $cat_id;
-    private $user_id;
-
-    public function __construct($id = null)
+    // Add a new brand - ensures (brand_name, cat_id, user_id) unique
+    public function add_brand($brand_name, $cat_id, $user_id)
     {
-        if (!parent::db_connect()) {
-            throw new Exception("Database connection failed");
-        }
-        if ($id) {
-            $this->id = $id;
-            $this->loadBrand();
-        }
-    }
+        $brand_name = trim($brand_name);
+        $cat_id = (int)$cat_id;
+        $user_id = (int)$user_id;
 
-    private function loadBrand()
-    {
-        if (!$this->id) {
+        if (empty($brand_name) || $cat_id <= 0 || $user_id <= 0) {
             return false;
         }
-        $stmt = $this->db->prepare("SELECT * FROM brands WHERE brand_id = ?");
-        $stmt->bind_param("i", $this->id);
-        $stmt->execute();
-        $result = $stmt->get_result()->fetch_assoc();
-        if ($result) {
-            $this->name = $result['brand_name'];
-            $this->cat_id = $result['cat_id'];
-            $this->user_id = $result['user_id'];
-        }
-        return $result ? true : false;
-    }
 
-    public function addBrand($name, $cat_id, $user_id)
-    {
-        // Check if name already exists for this user and category
-        $check_stmt = $this->db->prepare("SELECT brand_id FROM brands WHERE brand_name = ? AND cat_id = ? AND user_id = ?");
-        $check_stmt->bind_param("sii", $name, $cat_id, $user_id);
-        $check_stmt->execute();
-        if ($check_stmt->get_result()->num_rows > 0) {
-            return false; // Name exists for this user and category
+        // Check uniqueness
+        $stmt = $this->db->prepare("SELECT brand_id FROM brands WHERE brand_name = ? AND cat_id = ? AND user_id = ?");
+        $stmt->bind_param('sii', $brand_name, $cat_id, $user_id);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        if ($res && $res->num_rows > 0) {
+            return false; // already exists
         }
 
         $stmt = $this->db->prepare("INSERT INTO brands (brand_name, cat_id, user_id) VALUES (?, ?, ?)");
-        $stmt->bind_param("sii", $name, $cat_id, $user_id);
+        $stmt->bind_param('sii', $brand_name, $cat_id, $user_id);
         if ($stmt->execute()) {
             return $this->db->insert_id;
         }
         return false;
     }
 
-    public function getBrands($user_id)
+    // Update brand name
+    public function update_brand($brand_id, $brand_name)
     {
-        $stmt = $this->db->prepare("SELECT b.brand_id, b.brand_name, b.cat_id, c.cat_name FROM brands b JOIN categories c ON b.cat_id = c.cat_id WHERE b.user_id = ? ORDER BY c.cat_name ASC, b.brand_name ASC");
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
-    }
+        $brand_id = (int)$brand_id;
+        $brand_name = trim($brand_name);
 
-    public function getBrandById($id, $user_id)
-    {
-        $stmt = $this->db->prepare("SELECT b.brand_id, b.brand_name, b.cat_id, c.cat_name FROM brands b JOIN categories c ON b.cat_id = c.cat_id WHERE b.brand_id = ? AND b.user_id = ?");
-        $stmt->bind_param("ii", $id, $user_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
-    }
-
-    public function updateBrand($id, $name, $user_id)
-    {
-        // Check if brand belongs to user
-        $brand = $this->getBrandById($id, $user_id);
-        if (!$brand || $brand['user_id'] != $user_id) {
+        if ($brand_id <= 0 || empty($brand_name)) {
             return false;
         }
 
-        // Check if new name already exists for this user and category (excluding current ID)
-        $check_stmt = $this->db->prepare("SELECT brand_id FROM brands WHERE brand_name = ? AND cat_id = ? AND user_id = ? AND brand_id != ?");
-        $check_stmt->bind_param("siii", $name, $brand['cat_id'], $user_id, $id);
-        $check_stmt->execute();
-        if ($check_stmt->get_result()->num_rows > 0) {
-            return false; // Name exists for another brand of this user in the same category
-        }
-
-        $stmt = $this->db->prepare("UPDATE brands SET brand_name = ? WHERE brand_id = ? AND user_id = ?");
-        $stmt->bind_param("sii", $name, $id, $user_id);
+        $stmt = $this->db->prepare("UPDATE brands SET brand_name = ? WHERE brand_id = ?");
+        $stmt->bind_param('si', $brand_name, $brand_id);
         return $stmt->execute();
     }
 
-    public function deleteBrand($id, $user_id)
+    // Delete brand
+    public function delete_brand($brand_id)
     {
-        // Check if brand belongs to user
-        $brand = $this->getBrandById($id, $user_id);
-        if (!$brand || $brand['user_id'] != $user_id) {
+        $brand_id = (int)$brand_id;
+        if ($brand_id <= 0) {
             return false;
         }
-
-        $stmt = $this->db->prepare("DELETE FROM brands WHERE brand_id = ? AND user_id = ?");
-        $stmt->bind_param("ii", $id, $user_id);
+        $stmt = $this->db->prepare("DELETE FROM brands WHERE brand_id = ?");
+        $stmt->bind_param('i', $brand_id);
         return $stmt->execute();
     }
 
-    public function getCategories()
+    // Get brands for a user (optional grouping by category left to controller/view)
+    public function get_brands_by_user($user_id)
     {
-        $stmt = $this->db->prepare("SELECT cat_id, cat_name FROM categories ORDER BY cat_name ASC");
+        $user_id = (int)$user_id;
+        if ($user_id <= 0) {
+            return false;
+        }
+        $stmt = $this->db->prepare("SELECT b.brand_id, b.brand_name, b.cat_id, c.cat_name FROM brands b LEFT JOIN categories c ON b.cat_id = c.cat_id WHERE b.user_id = ? ORDER BY c.cat_name, b.brand_name");
+        $stmt->bind_param('i', $user_id);
         $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $res = $stmt->get_result();
+        return $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
+    }
+
+    // Get brands for a particular category and user
+    public function get_brands_by_category($cat_id, $user_id)
+    {
+        $cat_id = (int)$cat_id;
+        $user_id = (int)$user_id;
+        if ($cat_id <= 0 || $user_id <= 0) {
+            return false;
+        }
+        $stmt = $this->db->prepare("SELECT brand_id, brand_name FROM brands WHERE cat_id = ? AND user_id = ? ORDER BY brand_name");
+        $stmt->bind_param('ii', $cat_id, $user_id);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        return $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
     }
 }
-?>
+

@@ -1,39 +1,38 @@
 <?php
-session_start();
 header('Content-Type: application/json');
-
+session_start();
 require_once '../settings/core.php';
 require_once '../controllers/brand_controller.php';
 
+$response = ['status' => 'error', 'message' => 'Invalid request'];
+
 if (!is_logged_in() || !is_admin()) {
-    echo json_encode(['status' => 'error', 'message' => 'Access denied. Admin only.']);
+    $response['message'] = 'Unauthorized';
+    echo json_encode($response);
     exit;
 }
 
-$response = ['status' => 'error', 'message' => 'Invalid request.'];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
-    $cat_id = intval($_POST['cat_id'] ?? 0);
-
-    if (empty($name) || strlen($name) > 100) {
-        echo json_encode(['status' => 'error', 'message' => 'Brand name is required and must be less than 100 characters.']);
-        exit;
-    }
-
-    if ($cat_id <= 0) {
-        echo json_encode(['status' => 'error', 'message' => 'Valid category is required.']);
-        exit;
-    }
-
-    $user_id = get_user_id();
-    $result = add_brand_ctr($name, $cat_id, $user_id);
-    if ($result) {
-        echo json_encode(['status' => 'success', 'message' => 'Brand added successfully.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Brand name already exists for this category.']);
-    }
-} else {
-    echo json_encode(['status' => 'error', 'message' => 'POST method required.']);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode($response);
+    exit;
 }
-?>
+
+$brand_name = trim($_POST['brand_name'] ?? '');
+$cat_id = intval($_POST['cat_id'] ?? 0);
+$user_id = get_user_id();
+
+if ($brand_name === '' || $cat_id <= 0) {
+    $response['message'] = 'Brand name and category are required';
+    echo json_encode($response);
+    exit;
+}
+
+$res = add_brand_ctr($brand_name, $cat_id, $user_id);
+if ($res) {
+    $response = ['status' => 'success', 'message' => 'Brand added', 'brand_id' => $res];
+} else {
+    $response = ['status' => 'error', 'message' => 'Failed to add brand (may already exist)'];
+}
+
+echo json_encode($response);
+

@@ -24,4 +24,9 @@ if (!defined("DATABASE")) {
     // Use the database name from the provided SQL dump
     define("DATABASE", "shoppn");
 }
+
+// MySQL port - change if your server uses a non-standard port (default 3306)
+if (!defined("PORT")) {
+    define('PORT', 3306);
+}
 ?>

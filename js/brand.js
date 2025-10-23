@@ -1,161 +1,131 @@
-$(document).ready(function() {
-    loadCategories();
-    loadBrands();
+// brand.js - handles brand CRUD via AJAX
+(function(){
+    const $brandsContainer = $('#brandsContainer');
 
-    // Add Brand Form Submit
-    $('#addBrandForm').on('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
+    function escapeHtml(text) {
+        return $('<div>').text(text).html();
+    }
+
+    function loadBrands() {
         $.ajax({
-            url: '../actions/add_brand_action.php',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                const data = JSON.parse(response);
-                if (data.status === 'success') {
-                    Swal.fire('Success', data.message, 'success');
-                    $('#addBrandForm')[0].reset();
-                    loadBrands();
-                } else {
-                    Swal.fire('Error', data.message, 'error');
+            url: '../actions/fetch_brand_action.php',
+            method: 'GET',
+            dataType: 'json',
+            success(resp) {
+                if (resp.status !== 'success') {
+                    $brandsContainer.html('<div class="alert alert-danger">Failed to load brands</div>');
+                    return;
                 }
+                const brands = resp.brands || [];
+                const grouped = {};
+                brands.forEach(b => {
+                    const cat = b.cat_name || ('Category ' + b.cat_id);
+                    if (!grouped[cat]) grouped[cat] = [];
+                    grouped[cat].push(b);
+                });
+
+                let html = '';
+                for (const cat in grouped) {
+                    html += `<h5 class="mt-3">${escapeHtml(cat)}</h5>`;
+                    html += '<ul class="list-group mb-2">';
+                    grouped[cat].forEach(b => {
+                        html += `<li class="list-group-item d-flex justify-content-between align-items-center">`;
+                        html += `<span>${escapeHtml(b.brand_name)}</span>`;
+                        html += `<div>`;
+                        html += `<button class="btn btn-sm btn-outline-secondary me-2 editBrandBtn" data-id="${b.brand_id}" data-name="${escapeHtml(b.brand_name)}">Edit</button>`;
+                        html += `<button class="btn btn-sm btn-outline-danger deleteBrandBtn" data-id="${b.brand_id}">Delete</button>`;
+                        html += `</div>`;
+                        html += `</li>`;
+                    });
+                    html += '</ul>';
+                }
+                $brandsContainer.html(html);
             },
-            error: function() {
-                Swal.fire('Error', 'Failed to add brand.', 'error');
+            error() {
+                $brandsContainer.html('<div class="alert alert-danger">Error loading brands</div>');
             }
         });
+    }
+
+    // Initial load
+    $(document).ready(function(){
+        loadBrands();
     });
 
-    // Edit Brand Form Submit
-    $('#editBrandForm').on('submit', function(e) {
+    // Add brand
+    $(document).on('submit', '#addBrandForm', function(e){
         e.preventDefault();
-        const formData = new FormData(this);
-        $.ajax({
-            url: '../actions/update_brand_action.php',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                const data = JSON.parse(response);
-                if (data.status === 'success') {
-                    Swal.fire('Success', data.message, 'success');
-                    $('#editBrandModal').modal('hide');
-                    loadBrands();
-                } else {
-                    Swal.fire('Error', data.message, 'error');
-                }
-            },
-            error: function() {
-                Swal.fire('Error', 'Failed to update brand.', 'error');
+        const brand_name = $('#brand_name').val().trim();
+        const cat_id = $('#cat_id').val();
+        if (!brand_name || !cat_id) {
+            Swal.fire('Error','Brand name and category are required','error');
+            return;
+        }
+        $.post('../actions/add_brand_action.php', {brand_name, cat_id}, function(resp){
+            if (resp.status === 'success') {
+                Swal.fire('Success', resp.message, 'success');
+                $('#brand_name').val('');
+                $('#cat_id').val('');
+                loadBrands();
+            } else {
+                Swal.fire('Error', resp.message, 'error');
             }
-        });
+        }, 'json');
     });
 
-    // Delete Brand
-    $(document).on('click', '.delete-brand', function() {
-        const brandId = $(this).data('id');
+    // Open edit modal
+    $(document).on('click', '.editBrandBtn', function(){
+        const id = $(this).data('id');
+        const name = $(this).data('name');
+        $('#edit_brand_id').val(id);
+        $('#edit_brand_name').val(name);
+        const modal = new bootstrap.Modal(document.getElementById('editBrandModal'));
+        modal.show();
+    });
+
+    // Update brand
+    $(document).on('submit', '#editBrandForm', function(e){
+        e.preventDefault();
+        const brand_id = $('#edit_brand_id').val();
+        const brand_name = $('#edit_brand_name').val().trim();
+        if (!brand_name) {
+            Swal.fire('Error','Brand name is required','error');
+            return;
+        }
+        $.post('../actions/update_brand_action.php', {brand_id, brand_name}, function(resp){
+            if (resp.status === 'success') {
+                Swal.fire('Success', resp.message, 'success');
+                const modalInstance = bootstrap.Modal.getInstance(document.getElementById('editBrandModal'));
+                if (modalInstance) modalInstance.hide();
+                loadBrands();
+            } else {
+                Swal.fire('Error', resp.message, 'error');
+            }
+        }, 'json');
+    });
+
+    // Delete
+    $(document).on('click', '.deleteBrandBtn', function(){
+        const id = $(this).data('id');
         Swal.fire({
             title: 'Are you sure?',
-            text: 'You won\'t be able to revert this!',
+            text: 'This will delete the brand',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
+            confirmButtonText: 'Yes, delete it'
+        }).then(result => {
             if (result.isConfirmed) {
-                $.ajax({
-                    url: '../actions/delete_brand_action.php',
-                    type: 'POST',
-                    data: { id: brandId },
-                    success: function(response) {
-                        const data = JSON.parse(response);
-                        if (data.status === 'success') {
-                            Swal.fire('Deleted!', data.message, 'success');
-                            loadBrands();
-                        } else {
-                            Swal.fire('Error', data.message, 'error');
-                        }
-                    },
-                    error: function() {
-                        Swal.fire('Error', 'Failed to delete brand.', 'error');
+                $.post('../actions/delete_brand_action.php', {brand_id: id}, function(resp){
+                    if (resp.status === 'success') {
+                        Swal.fire('Deleted', resp.message, 'success');
+                        loadBrands();
+                    } else {
+                        Swal.fire('Error', resp.message, 'error');
                     }
-                });
+                }, 'json');
             }
         });
     });
 
-    // Edit Brand Button
-    $(document).on('click', '.edit-brand', function() {
-        const brandId = $(this).data('id');
-        const brandName = $(this).data('name');
-        const brandCategory = $(this).data('category');
-        $('#editBrandId').val(brandId);
-        $('#editBrandName').val(brandName);
-        $('#editBrandCategory').val(brandCategory);
-        $('#editBrandModal').modal('show');
-    });
-});
+})();
 
-function loadCategories() {
-    $.ajax({
-        url: '../actions/fetch_categories_action.php',
-        type: 'GET',
-        success: function(response) {
-            const data = JSON.parse(response);
-            if (data.status === 'success') {
-                const select = $('#brandCategory');
-                select.empty();
-                select.append('<option value="">Select Category</option>');
-                data.data.forEach(function(category) {
-                    select.append(`<option value="${category.cat_id}">${category.cat_name}</option>`);
-                });
-            } else {
-                Swal.fire('Error', data.message, 'error');
-            }
-        },
-        error: function() {
-            Swal.fire('Error', 'Failed to load categories.', 'error');
-        }
-    });
-}
-
-function loadBrands() {
-    $.ajax({
-        url: '../actions/fetch_brand_action.php',
-        type: 'GET',
-        success: function(response) {
-            const data = JSON.parse(response);
-            if (data.status === 'success') {
-                const tbody = $('#brandsTable tbody');
-                tbody.empty();
-                let currentCategory = '';
-                data.data.forEach(function(brand) {
-                    if (brand.cat_name !== currentCategory) {
-                        tbody.append(`<tr><td colspan="4" class="table-secondary fw-bold">${brand.cat_name}</td></tr>`);
-                        currentCategory = brand.cat_name;
-                    }
-                    tbody.append(`
-                        <tr>
-                            <td>${brand.brand_id}</td>
-                            <td>${brand.brand_name}</td>
-                            <td>${brand.cat_name}</td>
-                            <td>
-                                <button class="btn btn-sm btn-warning edit-brand" data-id="${brand.brand_id}" data-name="${brand.brand_name}" data-category="${brand.cat_name}">Edit</button>
-                                <button class="btn btn-sm btn-danger delete-brand" data-id="${brand.brand_id}">Delete</button>
-                            </td>
-                        </tr>
-                    `);
-                });
-            } else {
-                Swal.fire('Error', data.message, 'error');
-            }
-        },
-        error: function() {
-            Swal.fire('Error', 'Failed to load brands.', 'error');
-        }
-    });
-}
