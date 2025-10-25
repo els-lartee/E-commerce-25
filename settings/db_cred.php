@@ -10,7 +10,7 @@
 
 if (!defined("SERVER")) {
     // Prefer IPv4 localhost to avoid IPv6/hostname resolution issues
-    define("SERVER", "127.0.0.1");
+    define("SERVER", "localhost");
 }
 
 if (!defined("USERNAME")) {
@@ -23,7 +23,7 @@ if (!defined("PASSWD")) {
 
 if (!defined("DATABASE")) {
     // Use the database name from the provided SQL dump
-    define("DATABASE", "shoppn");
+    define("DATABASE", "ecommerce_2025A_elsie_lartey");
 }
 
 // MySQL port - change if your server uses a non-standard port (default 3306)

@@ -20,7 +20,12 @@ class Customer extends db_connection
 
     public function __construct($customer_id = null)
     {
-        parent::db_connect();
+        // Attempt DB connection and fail fast with a clear exception if it doesn't work.
+        $connected = parent::db_connect();
+        if (!$connected) {
+            // Use mysqli_connect_error() to expose the underlying connection error in logs.
+            throw new Exception('Database connection failed: ' . mysqli_connect_error());
+        }
         if ($customer_id) {
             $this->customer_id = $customer_id;
             $this->loadCustomer();
