@@ -4,28 +4,90 @@ require_once '../settings/db_class.php';
 
 class Brand extends db_connection
 {
-    // Add a new brand - ensures (brand_name, cat_id, user_id) unique
-    public function add_brand($brand_name, $cat_id, $user_id)
+    public function __construct()
+    {
+        $connected = parent::db_connect();
+        if (!$connected) {
+            throw new Exception('Database connection failed: ' . mysqli_connect_error());
+        }
+    }
+
+    /**
+     * Helper: check if a column exists in brands table and whether it's nullable
+     * @param string $col
+     * @return array|null  ['exists' => bool, 'nullable' => bool]
+     */
+    private function columnInfo($col)
+    {
+        $col = $this->db->real_escape_string($col);
+        $sql = "SELECT IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'brands' AND COLUMN_NAME = '{$col}'";
+        $res = $this->db->query($sql);
+        if ($res && $row = $res->fetch_assoc()) {
+            return ['exists' => true, 'nullable' => strtoupper($row['IS_NULLABLE']) === 'YES'];
+        }
+        return ['exists' => false, 'nullable' => true];
+    }
+    // Add a new brand using simple schema (brand_name)
+    public function add_brand($brand_name)
     {
         $brand_name = trim($brand_name);
-        $cat_id = (int)$cat_id;
-        $user_id = (int)$user_id;
-
-        if (empty($brand_name) || $cat_id <= 0 || $user_id <= 0) {
+        if (empty($brand_name)) {
             return false;
         }
 
         // Check uniqueness
-        $stmt = $this->db->prepare("SELECT brand_id FROM brands WHERE brand_name = ? AND cat_id = ? AND user_id = ?");
-        $stmt->bind_param('sii', $brand_name, $cat_id, $user_id);
+        $stmt = $this->db->prepare("SELECT brand_id FROM brands WHERE brand_name = ?");
+        $stmt->bind_param('s', $brand_name);
         $stmt->execute();
         $res = $stmt->get_result();
         if ($res && $res->num_rows > 0) {
             return false; // already exists
         }
 
-        $stmt = $this->db->prepare("INSERT INTO brands (brand_name, cat_id, user_id) VALUES (?, ?, ?)");
-        $stmt->bind_param('sii', $brand_name, $cat_id, $user_id);
+        // Detect additional columns (cat_id, user_id) and whether they accept NULL
+        $catInfo = $this->columnInfo('cat_id');
+        $userInfo = $this->columnInfo('user_id');
+
+        if ($catInfo['exists'] || $userInfo['exists']) {
+            // Build insert dynamically to include present columns
+            $cols = ['brand_name'];
+            $placeholders = ['?'];
+            $types = 's';
+            $values = [$brand_name];
+
+            if ($catInfo['exists']) {
+                $cols[] = 'cat_id';
+                $placeholders[] = '?';
+                $types .= 'i';
+                // use NULL if allowed, otherwise 0
+                $values[] = $catInfo['nullable'] ? null : 0;
+            }
+            if ($userInfo['exists']) {
+                $cols[] = 'user_id';
+                $placeholders[] = '?';
+                $types .= 'i';
+                $values[] = $userInfo['nullable'] ? null : 0;
+            }
+
+            $sql = "INSERT INTO brands (" . implode(', ', $cols) . ") VALUES (" . implode(', ', $placeholders) . ")";
+            $stmt = $this->db->prepare($sql);
+            // bind params dynamically
+            $bind_names[] = $types;
+            for ($i = 0; $i < count($values); $i++) {
+                $bind_name = 'bind' . $i;
+                $$bind_name = $values[$i];
+                $bind_names[] = &$$bind_name;
+            }
+            call_user_func_array([$stmt, 'bind_param'], $bind_names);
+            if ($stmt->execute()) {
+                return $this->db->insert_id;
+            }
+            return false;
+        }
+
+        // Simple insert (flat schema)
+        $stmt = $this->db->prepare("INSERT INTO brands (brand_name) VALUES (?)");
+        $stmt->bind_param('s', $brand_name);
         if ($stmt->execute()) {
             return $this->db->insert_id;
         }
@@ -59,32 +121,10 @@ class Brand extends db_connection
         return $stmt->execute();
     }
 
-    // Get brands for a user (optional grouping by category left to controller/view)
-    public function get_brands_by_user($user_id)
+    // Get all brands
+    public function get_all_brands()
     {
-        $user_id = (int)$user_id;
-        if ($user_id <= 0) {
-            return false;
-        }
-        $stmt = $this->db->prepare("SELECT b.brand_id, b.brand_name, b.cat_id, c.cat_name FROM brands b LEFT JOIN categories c ON b.cat_id = c.cat_id WHERE b.user_id = ? ORDER BY c.cat_name, b.brand_name");
-        $stmt->bind_param('i', $user_id);
-        $stmt->execute();
-        $res = $stmt->get_result();
-        return $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
-    }
-
-    // Get brands for a particular category and user
-    public function get_brands_by_category($cat_id, $user_id)
-    {
-        $cat_id = (int)$cat_id;
-        $user_id = (int)$user_id;
-        if ($cat_id <= 0 || $user_id <= 0) {
-            return false;
-        }
-        $stmt = $this->db->prepare("SELECT brand_id, brand_name FROM brands WHERE cat_id = ? AND user_id = ? ORDER BY brand_name");
-        $stmt->bind_param('ii', $cat_id, $user_id);
-        $stmt->execute();
-        $res = $stmt->get_result();
+        $res = $this->db->query("SELECT brand_id, brand_name FROM brands ORDER BY brand_name");
         return $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
     }
 }

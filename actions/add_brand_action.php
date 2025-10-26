@@ -18,16 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $brand_name = trim($_POST['brand_name'] ?? '');
-$cat_id = intval($_POST['cat_id'] ?? 0);
-$user_id = get_user_id();
 
-if ($brand_name === '' || $cat_id <= 0) {
-    $response['message'] = 'Brand name and category are required';
+if ($brand_name === '') {
+    $response['message'] = 'Brand name is required';
     echo json_encode($response);
     exit;
 }
 
-$res = add_brand_ctr($brand_name, $cat_id, $user_id);
+$res = add_brand_ctr($brand_name);
 if ($res) {
     $response = ['status' => 'success', 'message' => 'Brand added', 'brand_id' => $res];
 } else {

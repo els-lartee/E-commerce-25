@@ -33,6 +33,7 @@ require_once 'settings/core.php';
 			<?php if (is_admin()): ?>
 				<a href="admin/category.php" class="btn btn-sm btn-outline-info">Category</a>
 				<a href="admin/brand.php" class="btn btn-sm btn-outline-info">Brand</a>
+				<a href="admin/products.php" class="btn btn-sm btn-outline-info">Products</a>
 			<?php endif; ?>
 			<a href="login/logout.php" class="btn btn-sm btn-outline-danger">Logout</a>
 		<?php else: ?>

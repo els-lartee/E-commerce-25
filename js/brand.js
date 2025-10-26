@@ -17,18 +17,13 @@
                     return;
                 }
                 const brands = resp.brands || [];
-                const grouped = {};
-                brands.forEach(b => {
-                    const cat = b.cat_name || ('Category ' + b.cat_id);
-                    if (!grouped[cat]) grouped[cat] = [];
-                    grouped[cat].push(b);
-                });
 
                 let html = '';
-                for (const cat in grouped) {
-                    html += `<h5 class="mt-3">${escapeHtml(cat)}</h5>`;
-                    html += '<ul class="list-group mb-2">';
-                    grouped[cat].forEach(b => {
+                if (brands.length === 0) {
+                    html = '<div class="alert alert-info">No brands yet.</div>';
+                } else {
+                    html = '<ul class="list-group">';
+                    brands.forEach(b => {
                         html += `<li class="list-group-item d-flex justify-content-between align-items-center">`;
                         html += `<span>${escapeHtml(b.brand_name)}</span>`;
                         html += `<div>`;
@@ -56,16 +51,14 @@
     $(document).on('submit', '#addBrandForm', function(e){
         e.preventDefault();
         const brand_name = $('#brand_name').val().trim();
-        const cat_id = $('#cat_id').val();
-        if (!brand_name || !cat_id) {
-            Swal.fire('Error','Brand name and category are required','error');
+        if (!brand_name) {
+            Swal.fire('Error','Brand name is required','error');
             return;
         }
-        $.post('../actions/add_brand_action.php', {brand_name, cat_id}, function(resp){
+        $.post('../actions/add_brand_action.php', {brand_name}, function(resp){
             if (resp.status === 'success') {
                 Swal.fire('Success', resp.message, 'success');
                 $('#brand_name').val('');
-                $('#cat_id').val('');
                 loadBrands();
             } else {
                 Swal.fire('Error', resp.message, 'error');

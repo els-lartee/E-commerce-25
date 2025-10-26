@@ -8,10 +8,7 @@ if (!is_logged_in() || !is_admin()) {
 }
 
 // We'll load categories from DB for selection
-require_once '../settings/db_class.php';
-$db = new db_connection();
-$db->db_connect();
-$cats_res = $db->db_fetch_all("SELECT cat_id, cat_name FROM categories ORDER BY cat_name");
+// simple flat brands (brand_id, brand_name) - no category selection required
 
 ?>
 <!DOCTYPE html>
@@ -31,18 +28,10 @@ $cats_res = $db->db_fetch_all("SELECT cat_id, cat_name FROM categories ORDER BY 
         <div class="card mb-3">
             <div class="card-body">
                 <form id="addBrandForm" class="row g-2">
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                         <input type="text" id="brand_name" name="brand_name" class="form-control" placeholder="Brand name" maxlength="100" required>
                     </div>
                     <div class="col-md-4">
-                        <select id="cat_id" name="cat_id" class="form-control" required>
-                            <option value="">Select category</option>
-                            <?php foreach ($cats_res as $c): ?>
-                                <option value="<?= htmlspecialchars($c['cat_id']) ?>"><?= htmlspecialchars($c['cat_name']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
                         <button class="btn btn-primary w-100" type="submit">Add Brand</button>
                     </div>
                 </form>
