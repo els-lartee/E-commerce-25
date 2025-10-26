@@ -23,9 +23,6 @@ if (!defined("PASSWD")) {
 
 if (!defined("DATABASE")) {
     // Use the database name from the provided SQL dump
-    define("DATABASE", "ecommerce_2025A_elsie_lartey");
+    define("DATABASE", "shoppn");
 }
 
-if (!defined('PORT')) {
-    define('PORT', 33060);
-}
