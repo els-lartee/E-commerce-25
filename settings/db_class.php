@@ -22,8 +22,8 @@ if (!class_exists('db_connection')) {
         function db_connect()
         {
             //connection (include port if defined). Use @ to prevent exceptions from being thrown
-            if (defined('PORT') && PORT) {
-                $this->db = @mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE, PORT);
+            if (defined('PORT') && constant('PORT')) {
+                $this->db = @mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE, (int) constant('PORT'));
             } else {
                 $this->db = @mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE);
             }
@@ -39,8 +39,8 @@ if (!class_exists('db_connection')) {
         function db_conn()
         {
             //connection (include port if defined)
-            if (defined('PORT') && PORT) {
-                $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE, PORT);
+            if (defined('PORT') && constant('PORT')) {
+                $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE, (int) constant('PORT'));
             } else {
                 $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE);
             }
