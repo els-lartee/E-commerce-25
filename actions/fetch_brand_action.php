@@ -1,14 +1,14 @@
 <?php
-header('Content-Type: application/json');
+require_once(__DIR__ . "/../controllers/brand_controller.php");
 session_start();
-require_once '../settings/core.php';
-require_once '../controllers/brand_controller.php';
 
-if (!is_logged_in() || !is_admin()) {
-    echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode([]);
     exit;
 }
 
-$brands = get_all_brands_ctr();
-echo json_encode(['status' => 'success', 'brands' => $brands]);
+$user_id = $_SESSION['user_id'];
+$brands = get_brands_by_user_ctr($user_id);
 
+echo json_encode($brands ?? []);
+?>
