@@ -123,14 +123,15 @@ $(document).ready(function() {
                             role: role
                         },
                         success: function(response) {
-                            if (response.status === 'success') {
+                            console.log(response); // Debugging line
+                            if (response.status) {
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Success',
                                     text: response.message,
                                 }).then((result) => {
                                     if (result.isConfirmed) {
-                                        window.location.href = 'login.php';
+                                        window.location.href = '../login/login.php';
                                     }
                                 });
                             } else {

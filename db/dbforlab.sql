@@ -1,6 +1,4 @@
-DROP DATABASE IF EXISTS shoppn;
-CREATE DATABASE shoppn;
-USE shoppn;
+
 
 -- phpMyAdmin SQL Dump
 -- version 5.1.1

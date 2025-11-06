@@ -2,7 +2,7 @@
 
 header('Content-Type: application/json');
 
-session_start();
+// session_start();
 
 $response = array();
 
@@ -24,18 +24,12 @@ $city = $_POST['city'];
 $phone_number = $_POST['phone_number'];
 $role = $_POST['role'];
 
-$customer = new Customer();
-if ($customer->checkEmailExists($email)) {
-    $response['status'] = 'error';
-    $response['message'] = 'Email already exists';
-    echo json_encode($response);
-    exit();
-}
+
 
 $customer_id = register_customer_ctr($name, $email, $password, $country, $city, $phone_number, $role);
 
 if ($customer_id) {
-    $response['status'] = 'success';
+    $response['status'] = true;
     $response['message'] = 'Registered successfully';
     $response['customer_id'] = $customer_id;
 } else {
@@ -44,3 +38,5 @@ if ($customer_id) {
 }
 
 echo json_encode($response);
+
+exit();

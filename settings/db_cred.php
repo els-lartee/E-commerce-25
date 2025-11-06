@@ -9,6 +9,7 @@
 
 
 if (!defined("SERVER")) {
+    // Prefer IPv4 localhost to avoid IPv6/hostname resolution issues
     define("SERVER", "localhost");
 }
 
@@ -17,11 +18,11 @@ if (!defined("USERNAME")) {
 }
 
 if (!defined("PASSWD")) {
-    define("PASSWD", "1912.Elsie");
+    define("PASSWD", "");
 }
 
 if (!defined("DATABASE")) {
     // Use the database name from the provided SQL dump
     define("DATABASE", "shoppn");
 }
-?>
+

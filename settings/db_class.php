@@ -1,5 +1,8 @@
 <?php
-include_once 'db_cred.php';
+// include credentials using __DIR__ to avoid relative-include issues
+include_once __DIR__ . '/db_cred.php';
+// Avoid mysqli throwing exceptions on connect - we handle errors manually
+mysqli_report(MYSQLI_REPORT_OFF);
 
 /**
  *@version 1.1
@@ -18,8 +21,12 @@ if (!class_exists('db_connection')) {
          **/
         function db_connect()
         {
-            //connection
-            $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE);
+            //connection (include port if defined). Use @ to prevent exceptions from being thrown
+            if (defined('PORT') && constant('PORT')) {
+                $this->db = @mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE, (int) constant('PORT'));
+            } else {
+                $this->db = @mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE);
+            }
 
             //test the connection
             if (mysqli_connect_errno()) {
@@ -31,8 +38,12 @@ if (!class_exists('db_connection')) {
 
         function db_conn()
         {
-            //connection
-            $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE);
+            //connection (include port if defined)
+            if (defined('PORT') && constant('PORT')) {
+                $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE, (int) constant('PORT'));
+            } else {
+                $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE);
+            }
 
             //test the connection
             if (mysqli_connect_errno()) {
