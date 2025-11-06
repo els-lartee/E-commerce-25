@@ -8,21 +8,10 @@
 // define('DB_NAME', 'dbforlab');
 
 
-if (!defined("SERVER")) {
-    // Prefer IPv4 localhost to avoid IPv6/hostname resolution issues
-    define("SERVER", "localhost");
-}
 
-if (!defined("USERNAME")) {
-    define("USERNAME", "root");
-}
+define("SERVER", "localhost");
+define("USERNAME", "elsie.lartey");
+define("PASSWD", "YourNewPassword");
+define("DATABASE", "ecommerce_2025A_elsie_lartey");
 
-if (!defined("PASSWD")) {
-    define("PASSWD", "");
-}
-
-if (!defined("DATABASE")) {
-    // Use the database name from the provided SQL dump
-    define("DATABASE", "shoppn");
-}
-
+?>
