@@ -329,3 +329,291 @@
 
 )
 
+[06-Nov-2025 19:01:13 UTC] Products fetched: Array
+(
+    [0] => Array
+        (
+            [product_id] => 4
+            [product_cat] => 2
+            [product_brand] => 3
+            [product_title] => Dolor duis aut autem
+            [product_price] => 534
+            [product_desc] => Numquam eaque dolori
+            [product_image] => uploads/products/product_1762455638.jpeg
+            [product_keywords] => Qui quas consectetur
+            [cat_name] => Ruby necklace
+            [brand_name] => Gold
+        )
+
+    [1] => Array
+        (
+            [product_id] => 3
+            [product_cat] => 3
+            [product_brand] => 1
+            [product_title] => Quisquam dolorem vol
+            [product_price] => 504
+            [product_desc] => Non esse laboris cu
+            [product_image] => uploads/products/product_1762455622.jpeg
+            [product_keywords] => Cillum mollitia offi
+            [cat_name] => Patricia Bridges
+            [brand_name] => Silver
+        )
+
+)
+
+[06-Nov-2025 19:01:13 UTC] Categories fetched: Array
+(
+    [0] => Array
+        (
+            [id] => 4
+            [name] => butterfly necklace
+            [user_id] => 5
+        )
+
+    [1] => Array
+        (
+            [id] => 3
+            [name] => Patricia Bridges
+            [user_id] => 5
+        )
+
+    [2] => Array
+        (
+            [id] => 2
+            [name] => Ruby necklace
+            [user_id] => 5
+        )
+
+    [3] => Array
+        (
+            [id] => 5
+            [name] => ruby ring
+            [user_id] => 5
+        )
+
+)
+
+[06-Nov-2025 19:01:14 UTC] Products fetched: Array
+(
+    [0] => Array
+        (
+            [product_id] => 4
+            [product_cat] => 2
+            [product_brand] => 3
+            [product_title] => Dolor duis aut autem
+            [product_price] => 534
+            [product_desc] => Numquam eaque dolori
+            [product_image] => uploads/products/product_1762455638.jpeg
+            [product_keywords] => Qui quas consectetur
+            [cat_name] => Ruby necklace
+            [brand_name] => Gold
+        )
+
+    [1] => Array
+        (
+            [product_id] => 3
+            [product_cat] => 3
+            [product_brand] => 1
+            [product_title] => Quisquam dolorem vol
+            [product_price] => 504
+            [product_desc] => Non esse laboris cu
+            [product_image] => uploads/products/product_1762455622.jpeg
+            [product_keywords] => Cillum mollitia offi
+            [cat_name] => Patricia Bridges
+            [brand_name] => Silver
+        )
+
+)
+
+[06-Nov-2025 19:17:04 UTC] Products fetched: Array
+(
+    [0] => Array
+        (
+            [product_id] => 4
+            [product_cat] => 2
+            [product_brand] => 3
+            [product_title] => Dolor duis aut autem
+            [product_price] => 534
+            [product_desc] => Numquam eaque dolori
+            [product_image] => uploads/products/product_1762455638.jpeg
+            [product_keywords] => Qui quas consectetur
+            [cat_name] => Ruby necklace
+            [brand_name] => Gold
+        )
+
+    [1] => Array
+        (
+            [product_id] => 3
+            [product_cat] => 3
+            [product_brand] => 1
+            [product_title] => Quisquam dolorem vol
+            [product_price] => 504
+            [product_desc] => Non esse laboris cu
+            [product_image] => uploads/products/product_1762455622.jpeg
+            [product_keywords] => Cillum mollitia offi
+            [cat_name] => Patricia Bridges
+            [brand_name] => Silver
+        )
+
+)
+
+[06-Nov-2025 19:17:04 UTC] Categories fetched: Array
+(
+    [0] => Array
+        (
+            [id] => 4
+            [name] => butterfly necklace
+            [user_id] => 5
+        )
+
+    [1] => Array
+        (
+            [id] => 3
+            [name] => Patricia Bridges
+            [user_id] => 5
+        )
+
+    [2] => Array
+        (
+            [id] => 2
+            [name] => Ruby necklace
+            [user_id] => 5
+        )
+
+    [3] => Array
+        (
+            [id] => 5
+            [name] => ruby ring
+            [user_id] => 5
+        )
+
+)
+
+[06-Nov-2025 19:17:06 UTC] Products fetched: Array
+(
+    [0] => Array
+        (
+            [product_id] => 4
+            [product_cat] => 2
+            [product_brand] => 3
+            [product_title] => Dolor duis aut autem
+            [product_price] => 534
+            [product_desc] => Numquam eaque dolori
+            [product_image] => uploads/products/product_1762455638.jpeg
+            [product_keywords] => Qui quas consectetur
+            [cat_name] => Ruby necklace
+            [brand_name] => Gold
+        )
+
+    [1] => Array
+        (
+            [product_id] => 3
+            [product_cat] => 3
+            [product_brand] => 1
+            [product_title] => Quisquam dolorem vol
+            [product_price] => 504
+            [product_desc] => Non esse laboris cu
+            [product_image] => uploads/products/product_1762455622.jpeg
+            [product_keywords] => Cillum mollitia offi
+            [cat_name] => Patricia Bridges
+            [brand_name] => Silver
+        )
+
+)
+
+[06-Nov-2025 23:25:11 UTC] Products fetched: Array
+(
+    [0] => Array
+        (
+            [product_id] => 4
+            [product_cat] => 2
+            [product_brand] => 3
+            [product_title] => Dolor duis aut autem
+            [product_price] => 534
+            [product_desc] => Numquam eaque dolori
+            [product_image] => uploads/products/product_1762455638.jpeg
+            [product_keywords] => Qui quas consectetur
+            [cat_name] => Ruby necklace
+            [brand_name] => Gold
+        )
+
+    [1] => Array
+        (
+            [product_id] => 3
+            [product_cat] => 3
+            [product_brand] => 1
+            [product_title] => Quisquam dolorem vol
+            [product_price] => 504
+            [product_desc] => Non esse laboris cu
+            [product_image] => uploads/products/product_1762455622.jpeg
+            [product_keywords] => Cillum mollitia offi
+            [cat_name] => Patricia Bridges
+            [brand_name] => Silver
+        )
+
+)
+
+[06-Nov-2025 23:25:11 UTC] Categories fetched: Array
+(
+    [0] => Array
+        (
+            [id] => 4
+            [name] => butterfly necklace
+            [user_id] => 5
+        )
+
+    [1] => Array
+        (
+            [id] => 3
+            [name] => Patricia Bridges
+            [user_id] => 5
+        )
+
+    [2] => Array
+        (
+            [id] => 2
+            [name] => Ruby necklace
+            [user_id] => 5
+        )
+
+    [3] => Array
+        (
+            [id] => 5
+            [name] => ruby ring
+            [user_id] => 5
+        )
+
+)
+
+[06-Nov-2025 23:25:11 UTC] Products fetched: Array
+(
+    [0] => Array
+        (
+            [product_id] => 4
+            [product_cat] => 2
+            [product_brand] => 3
+            [product_title] => Dolor duis aut autem
+            [product_price] => 534
+            [product_desc] => Numquam eaque dolori
+            [product_image] => uploads/products/product_1762455638.jpeg
+            [product_keywords] => Qui quas consectetur
+            [cat_name] => Ruby necklace
+            [brand_name] => Gold
+        )
+
+    [1] => Array
+        (
+            [product_id] => 3
+            [product_cat] => 3
+            [product_brand] => 1
+            [product_title] => Quisquam dolorem vol
+            [product_price] => 504
+            [product_desc] => Non esse laboris cu
+            [product_image] => uploads/products/product_1762455622.jpeg
+            [product_keywords] => Cillum mollitia offi
+            [cat_name] => Patricia Bridges
+            [brand_name] => Silver
+        )
+
+)
+
