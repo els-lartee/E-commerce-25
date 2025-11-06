@@ -1,11 +1,13 @@
 <?php
 session_start();
+require_once '../settings/core.php';
+
 if (!is_logged_in() || !is_admin()) {
     header('Location: ../login/login.php');
     exit;
 }
 
-require_once(__DIR__ . "/../controllers/brand_controller.php");
+require_once(__DIR__ . "../controllers/brand_controller.php");
 $categories = get_categories_ctr();
 ?>
 <!DOCTYPE html>
