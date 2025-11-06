@@ -31,7 +31,9 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `brands` (
   `brand_id` int(11) NOT NULL,
-  `brand_name` varchar(100) NOT NULL
+  `brand_name` varchar(100) NOT NULL,
+  `cat_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------

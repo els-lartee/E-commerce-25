@@ -7,8 +7,9 @@ if (!is_logged_in() || !is_admin()) {
     exit;
 }
 
-require_once(__DIR__ . "../controllers/brand_controller.php");
-$categories = get_categories_ctr();
+require_once(__DIR__ . "/../controllers/brand_controller.php");
+require_once(__DIR__ . "/../controllers/jewellery_controller.php");
+$categories = get_jewellery_ctr($_SESSION['user_id']);
 ?>
 <!DOCTYPE html>
 <html>
@@ -24,7 +25,7 @@ $categories = get_categories_ctr();
         <select id="cat_id" required>
             <option value="">Select Jewellery Category</option>
             <?php foreach ($categories as $cat): ?>
-                <option value="<?= $cat['cat_id'] ?>"><?= $cat['cat_name'] ?></option>
+                <option value="<?= $cat['id'] ?>"><?= $cat['name'] ?></option>
             <?php endforeach; ?>
         </select>
         <button type="submit">Add Brand</button>
