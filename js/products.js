@@ -40,16 +40,21 @@
             if (cResp.status === 'success') {
                 const cats = cResp.categories || [];
                 let opts = '<option value="">Select category</option>';
-                cats.forEach(c => { opts += `<option value="${c.cat_id}">${escapeHtml(c.cat_name)}</option>`; });
+                cats.forEach(c => { opts += `<option value="${c.id}">${escapeHtml(c.name)}</option>`; });
                 $('#product_cat, #edit_product_cat').each(function(){ $(this).html(opts); });
             }
         }).always(function(){
             // fetch brands
             $.getJSON('../actions/fetch_brand_action.php', function(bResp){
+                console.log('Brand response:', bResp);
                 if (bResp.status === 'success') {
                     const brands = bResp.brands || [];
+                    console.log('Brands:', brands);
                     let opts = '<option value="">Select brand</option>';
-                    brands.forEach(b => { opts += `<option value="${b.brand_id}">${escapeHtml(b.brand_name)}</option>`; });
+                    brands.forEach(b => { 
+                        console.log('Adding brand:', b);
+                        opts += `<option value="${b.brand_id}">${escapeHtml(b.brand_name)}</option>`; 
+                    });
                     $('#product_brand, #edit_product_brand').each(function(){ $(this).html(opts); });
                 }
             }).always(function(){

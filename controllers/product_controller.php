@@ -5,9 +5,17 @@ require_once '../settings/core.php';
 
 function add_product_ctr($data, $imageFile = null, $user_id = 0)
 {
-    if (!is_logged_in() || !is_admin()) return false;
-    $p = new Product();
-    return $p->add_product($data, $imageFile, $user_id);
+    try {
+        if (!is_logged_in() || !is_admin()) {
+            error_log("Unauthorized attempt to add product");
+            return false;
+        }
+        $p = new Product();
+        return $p->add_product($data, $imageFile, $user_id);
+    } catch (Exception $e) {
+        error_log("Error in add_product_ctr: " . $e->getMessage());
+        return false;
+    }
 }
 
 function update_product_ctr($product_id, $data, $imageFile = null, $user_id = 0)
@@ -26,9 +34,19 @@ function delete_product_ctr($product_id)
 
 function get_all_products_ctr()
 {
-    if (!is_logged_in() || !is_admin()) return [];
-    $p = new Product();
-    return $p->get_all_products();
+    try {
+        if (!is_logged_in() || !is_admin()) {
+            error_log("Unauthorized attempt to get products");
+            return [];
+        }
+        $p = new Product();
+        $result = $p->get_all_products();
+        error_log("Products fetched: " . print_r($result, true));
+        return $result;
+    } catch (Exception $e) {
+        error_log("Error in get_all_products_ctr: " . $e->getMessage());
+        return [];
+    }
 }
 
 function get_product_ctr($product_id)
