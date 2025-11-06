@@ -72,6 +72,13 @@
     $(document).on('submit', '#addProductForm', function(e){
         e.preventDefault();
         const fd = new FormData(this);
+        
+        // Log form data for debugging
+        console.log('Form data:');
+        for (let pair of fd.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+        
         $.ajax({
             url: '../actions/add_product_action.php',
             method: 'POST',
@@ -80,15 +87,20 @@
             processData: false,
             dataType: 'json',
             success(resp){
+                console.log('Server response:', resp);
                 if (resp.status === 'success') {
                     Swal.fire('Success', resp.message, 'success');
                     $('#addProductForm')[0].reset();
                     loadProducts();
                 } else {
-                    Swal.fire('Error', resp.message, 'error');
+                    console.error('Server error:', resp.message);
+                    Swal.fire('Error', resp.message || 'Failed to add product', 'error');
                 }
             },
-            error(){ Swal.fire('Error','Request failed','error'); }
+            error(xhr, status, error){ 
+                console.error('Ajax error:', {status, error, response: xhr.responseText});
+                Swal.fire('Error','Request failed: ' + error,'error'); 
+            }
         });
     });
 

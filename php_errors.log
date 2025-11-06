@@ -1,0 +1,331 @@
+[06-Nov-2025 18:56:09 UTC] Query failed: Table 'ecommerce_2025A_elsie_lartey.products' doesn't exist
+[06-Nov-2025 18:56:09 UTC] Products fetched: Array
+(
+)
+
+[06-Nov-2025 18:56:09 UTC] Categories fetched: Array
+(
+    [0] => Array
+        (
+            [id] => 4
+            [name] => butterfly necklace
+            [user_id] => 5
+        )
+
+    [1] => Array
+        (
+            [id] => 3
+            [name] => Patricia Bridges
+            [user_id] => 5
+        )
+
+    [2] => Array
+        (
+            [id] => 2
+            [name] => Ruby necklace
+            [user_id] => 5
+        )
+
+    [3] => Array
+        (
+            [id] => 5
+            [name] => ruby ring
+            [user_id] => 5
+        )
+
+)
+
+[06-Nov-2025 18:56:11 UTC] Query failed: Table 'ecommerce_2025A_elsie_lartey.products' doesn't exist
+[06-Nov-2025 18:56:11 UTC] Products fetched: Array
+(
+)
+
+[06-Nov-2025 18:56:27 UTC] POST data received: Array
+(
+    [product_cat] => 4
+    [product_brand] => 1
+    [product_title] => Ex sunt id dolor lor
+    [product_price] => 272
+    [product_desc] => At enim cupiditate m
+    [product_keywords] => Eiusmod qui aliqua 
+)
+
+[06-Nov-2025 18:56:27 UTC] FILES data received: Array
+(
+    [product_image] => Array
+        (
+            [name] => j.jpeg
+            [full_path] => j.jpeg
+            [type] => image/jpeg
+            [tmp_name] => /tmp/phpz0vkQa
+            [error] => 0
+            [size] => 8367
+        )
+
+)
+
+[06-Nov-2025 18:56:27 UTC] Processed data: Array
+(
+    [product_cat] => 4
+    [product_brand] => 1
+    [product_title] => Ex sunt id dolor lor
+    [product_price] => 272
+    [product_desc] => At enim cupiditate m
+    [product_keywords] => Eiusmod qui aliqua
+)
+
+[06-Nov-2025 18:56:27 UTC] Calling add_product_ctr with data
+[06-Nov-2025 18:56:27 UTC] Starting add_product method with data: Array
+(
+    [product_cat] => 4
+    [product_brand] => 1
+    [product_title] => Ex sunt id dolor lor
+    [product_price] => 272
+    [product_desc] => At enim cupiditate m
+    [product_keywords] => Eiusmod qui aliqua
+)
+
+[06-Nov-2025 18:56:27 UTC] Image file info: Array
+(
+    [name] => j.jpeg
+    [full_path] => j.jpeg
+    [type] => image/jpeg
+    [tmp_name] => /tmp/phpz0vkQa
+    [error] => 0
+    [size] => 8367
+)
+
+[06-Nov-2025 18:56:27 UTC] Processing uploaded image
+[06-Nov-2025 18:56:27 UTC] Upload directory: /home/elsie.lartey/public_html/E-commerce-25/uploads/products/
+[06-Nov-2025 18:56:27 UTC] Attempting to move uploaded file from /tmp/phpz0vkQa to: /home/elsie.lartey/public_html/E-commerce-25/uploads/products/product_1762455387.jpeg
+[06-Nov-2025 18:56:27 UTC] File permissions before move: 0777
+[06-Nov-2025 18:56:27 UTC] Image uploaded successfully to: uploads/products/product_1762455387.jpeg
+[06-Nov-2025 18:56:27 UTC] Validated data - Category: 4, Brand: 1, Title: Ex sunt id dolor lor, Price: 272
+[06-Nov-2025 18:56:27 UTC] Preparing SQL: INSERT INTO products (product_cat, product_brand, product_title, product_price, product_desc, product_image, product_keywords) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+[06-Nov-2025 18:56:27 UTC] Image path: uploads/products/product_1762455387.jpeg
+[06-Nov-2025 18:56:27 UTC] Prepare failed: Table 'ecommerce_2025A_elsie_lartey.products' doesn't exist
+[06-Nov-2025 19:00:08 UTC] Products fetched: Array
+(
+)
+
+[06-Nov-2025 19:00:08 UTC] Categories fetched: Array
+(
+    [0] => Array
+        (
+            [id] => 4
+            [name] => butterfly necklace
+            [user_id] => 5
+        )
+
+    [1] => Array
+        (
+            [id] => 3
+            [name] => Patricia Bridges
+            [user_id] => 5
+        )
+
+    [2] => Array
+        (
+            [id] => 2
+            [name] => Ruby necklace
+            [user_id] => 5
+        )
+
+    [3] => Array
+        (
+            [id] => 5
+            [name] => ruby ring
+            [user_id] => 5
+        )
+
+)
+
+[06-Nov-2025 19:00:09 UTC] Products fetched: Array
+(
+)
+
+[06-Nov-2025 19:00:22 UTC] POST data received: Array
+(
+    [product_cat] => 3
+    [product_brand] => 1
+    [product_title] => Quisquam dolorem vol
+    [product_price] => 504
+    [product_desc] => Non esse laboris cu
+    [product_keywords] => Cillum mollitia offi
+)
+
+[06-Nov-2025 19:00:22 UTC] FILES data received: Array
+(
+    [product_image] => Array
+        (
+            [name] => j.jpeg
+            [full_path] => j.jpeg
+            [type] => image/jpeg
+            [tmp_name] => /tmp/phpgGmJ0E
+            [error] => 0
+            [size] => 8367
+        )
+
+)
+
+[06-Nov-2025 19:00:22 UTC] Processed data: Array
+(
+    [product_cat] => 3
+    [product_brand] => 1
+    [product_title] => Quisquam dolorem vol
+    [product_price] => 504
+    [product_desc] => Non esse laboris cu
+    [product_keywords] => Cillum mollitia offi
+)
+
+[06-Nov-2025 19:00:22 UTC] Calling add_product_ctr with data
+[06-Nov-2025 19:00:22 UTC] Starting add_product method with data: Array
+(
+    [product_cat] => 3
+    [product_brand] => 1
+    [product_title] => Quisquam dolorem vol
+    [product_price] => 504
+    [product_desc] => Non esse laboris cu
+    [product_keywords] => Cillum mollitia offi
+)
+
+[06-Nov-2025 19:00:22 UTC] Image file info: Array
+(
+    [name] => j.jpeg
+    [full_path] => j.jpeg
+    [type] => image/jpeg
+    [tmp_name] => /tmp/phpgGmJ0E
+    [error] => 0
+    [size] => 8367
+)
+
+[06-Nov-2025 19:00:22 UTC] Processing uploaded image
+[06-Nov-2025 19:00:22 UTC] Upload directory: /home/elsie.lartey/public_html/E-commerce-25/uploads/products/
+[06-Nov-2025 19:00:22 UTC] Attempting to move uploaded file from /tmp/phpgGmJ0E to: /home/elsie.lartey/public_html/E-commerce-25/uploads/products/product_1762455622.jpeg
+[06-Nov-2025 19:00:22 UTC] File permissions before move: 0777
+[06-Nov-2025 19:00:22 UTC] Image uploaded successfully to: uploads/products/product_1762455622.jpeg
+[06-Nov-2025 19:00:22 UTC] Validated data - Category: 3, Brand: 1, Title: Quisquam dolorem vol, Price: 504
+[06-Nov-2025 19:00:22 UTC] Preparing SQL: INSERT INTO product (product_cat, product_brand, product_title, product_price, product_desc, product_image, product_keywords) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+[06-Nov-2025 19:00:22 UTC] Image path: uploads/products/product_1762455622.jpeg
+[06-Nov-2025 19:00:22 UTC] Statement prepared successfully
+[06-Nov-2025 19:00:22 UTC] Executing statement...
+[06-Nov-2025 19:00:22 UTC] Product added successfully with ID: 3
+[06-Nov-2025 19:00:22 UTC] Products fetched: Array
+(
+    [0] => Array
+        (
+            [product_id] => 3
+            [product_cat] => 3
+            [product_brand] => 1
+            [product_title] => Quisquam dolorem vol
+            [product_price] => 504
+            [product_desc] => Non esse laboris cu
+            [product_image] => uploads/products/product_1762455622.jpeg
+            [product_keywords] => Cillum mollitia offi
+            [cat_name] => Patricia Bridges
+            [brand_name] => Silver
+        )
+
+)
+
+[06-Nov-2025 19:00:38 UTC] POST data received: Array
+(
+    [product_cat] => 2
+    [product_brand] => 3
+    [product_title] => Dolor duis aut autem
+    [product_price] => 534
+    [product_desc] => Numquam eaque dolori
+    [product_keywords] => Qui quas consectetur
+)
+
+[06-Nov-2025 19:00:38 UTC] FILES data received: Array
+(
+    [product_image] => Array
+        (
+            [name] => j.jpeg
+            [full_path] => j.jpeg
+            [type] => image/jpeg
+            [tmp_name] => /tmp/php4r0CP8
+            [error] => 0
+            [size] => 8367
+        )
+
+)
+
+[06-Nov-2025 19:00:38 UTC] Processed data: Array
+(
+    [product_cat] => 2
+    [product_brand] => 3
+    [product_title] => Dolor duis aut autem
+    [product_price] => 534
+    [product_desc] => Numquam eaque dolori
+    [product_keywords] => Qui quas consectetur
+)
+
+[06-Nov-2025 19:00:38 UTC] Calling add_product_ctr with data
+[06-Nov-2025 19:00:38 UTC] Starting add_product method with data: Array
+(
+    [product_cat] => 2
+    [product_brand] => 3
+    [product_title] => Dolor duis aut autem
+    [product_price] => 534
+    [product_desc] => Numquam eaque dolori
+    [product_keywords] => Qui quas consectetur
+)
+
+[06-Nov-2025 19:00:38 UTC] Image file info: Array
+(
+    [name] => j.jpeg
+    [full_path] => j.jpeg
+    [type] => image/jpeg
+    [tmp_name] => /tmp/php4r0CP8
+    [error] => 0
+    [size] => 8367
+)
+
+[06-Nov-2025 19:00:38 UTC] Processing uploaded image
+[06-Nov-2025 19:00:38 UTC] Upload directory: /home/elsie.lartey/public_html/E-commerce-25/uploads/products/
+[06-Nov-2025 19:00:38 UTC] Attempting to move uploaded file from /tmp/php4r0CP8 to: /home/elsie.lartey/public_html/E-commerce-25/uploads/products/product_1762455638.jpeg
+[06-Nov-2025 19:00:38 UTC] File permissions before move: 0777
+[06-Nov-2025 19:00:38 UTC] Image uploaded successfully to: uploads/products/product_1762455638.jpeg
+[06-Nov-2025 19:00:38 UTC] Validated data - Category: 2, Brand: 3, Title: Dolor duis aut autem, Price: 534
+[06-Nov-2025 19:00:38 UTC] Preparing SQL: INSERT INTO product (product_cat, product_brand, product_title, product_price, product_desc, product_image, product_keywords) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+[06-Nov-2025 19:00:38 UTC] Image path: uploads/products/product_1762455638.jpeg
+[06-Nov-2025 19:00:38 UTC] Statement prepared successfully
+[06-Nov-2025 19:00:38 UTC] Executing statement...
+[06-Nov-2025 19:00:38 UTC] Product added successfully with ID: 4
+[06-Nov-2025 19:00:38 UTC] Products fetched: Array
+(
+    [0] => Array
+        (
+            [product_id] => 4
+            [product_cat] => 2
+            [product_brand] => 3
+            [product_title] => Dolor duis aut autem
+            [product_price] => 534
+            [product_desc] => Numquam eaque dolori
+            [product_image] => uploads/products/product_1762455638.jpeg
+            [product_keywords] => Qui quas consectetur
+            [cat_name] => Ruby necklace
+            [brand_name] => Gold
+        )
+
+    [1] => Array
+        (
+            [product_id] => 3
+            [product_cat] => 3
+            [product_brand] => 1
+            [product_title] => Quisquam dolorem vol
+            [product_price] => 504
+            [product_desc] => Non esse laboris cu
+            [product_image] => uploads/products/product_1762455622.jpeg
+            [product_keywords] => Cillum mollitia offi
+            [cat_name] => Patricia Bridges
+            [brand_name] => Silver
+        )
+
+)
+

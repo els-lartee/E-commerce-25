@@ -9,7 +9,7 @@ if (!$conn->db_connect()) {
 
 try {
     // Drop foreign key constraint if exists
-    $conn->db_write_query("ALTER TABLE products DROP FOREIGN KEY IF EXISTS products_ibfk_1");
+    $conn->db_write_query("ALTER TABLE product DROP FOREIGN KEY IF EXISTS products_ibfk_1");
     
     // Drop tables if exist
     $conn->db_write_query("DROP TABLE IF EXISTS jewellery");
