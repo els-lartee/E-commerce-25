@@ -36,6 +36,7 @@ require_once 'settings/core.php';
 				<a href="admin/products.php" class="btn btn-sm btn-outline-info">Products</a>
 			<?php endif; ?>
 			<a href="login/logout.php" class="btn btn-sm btn-outline-danger">Logout</a>
+			<a href="admin/products.php" class="btn btn-sm btn-outline-danger">Logout</a>
 		<?php else: ?>
 			<a href="login/register.php" class="btn btn-sm btn-outline-primary">Register</a>
 			<a href="login/login.php" class="btn btn-sm btn-outline-secondary">Login</a>
