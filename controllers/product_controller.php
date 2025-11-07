@@ -35,7 +35,7 @@ function delete_product_ctr($product_id)
 function get_all_products_ctr()
 {
     try {
-        if (!is_logged_in() || !is_admin()) {
+        if (!is_logged_in()) {
             error_log("Unauthorized attempt to get products");
             return [];
         }

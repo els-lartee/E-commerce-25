@@ -47,8 +47,56 @@ require_once 'settings/core.php';
 			<h1>Welcome</h1>
 			<p class="text-muted">Use the menu in the top-right to Register or Login.</p>
 		</div>
+		<?php if (isset($_SESSION['user_id']) && !is_admin()): ?>
+			<div class="mt-5">
+				<h2>Available Products</h2>
+				<div id="productsContainer" class="row"></div>
+			</div>
+		<?php endif; ?>
 	</div>
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			<?php if (isset($_SESSION['user_id']) && !is_admin()): ?>
+				loadProducts();
+			<?php endif; ?>
+		});
+
+		function loadProducts() {
+			$.getJSON('actions/fetch_product_action.php', function(resp){
+				if (resp.status !== 'success') {
+					$('#productsContainer').html('<div class="alert alert-danger">Failed to load products</div>');
+					return;
+				}
+				const products = resp.products || [];
+				if (products.length === 0) {
+					$('#productsContainer').html('<div class="alert alert-info">No products available.</div>');
+					return;
+				}
+				let html = '';
+				products.forEach(p => {
+					const img = p.product_image ? `<img src="${p.product_image}" class="card-img-top" style="height:200px; object-fit:cover;" alt="${p.product_title}">` : '<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:200px;"><span class="text-muted">No Image</span></div>';
+					html += `
+						<div class="col-md-4 mb-4">
+							<div class="card h-100">
+								${img}
+								<div class="card-body">
+									<h5 class="card-title">${p.product_title}</h5>
+									<p class="card-text"><strong>Price:</strong> $${p.product_price}</p>
+									<p class="card-text">${p.product_desc || 'No description available.'}</p>
+									<p class="card-text"><small class="text-muted">Category: ${p.cat_name} | Brand: ${p.brand_name}</small></p>
+								</div>
+							</div>
+						</div>
+					`;
+				});
+				$('#productsContainer').html(html);
+			}).fail(function(){
+				$('#productsContainer').html('<div class="alert alert-danger">Error loading products</div>');
+			});
+		}
+	</script>
 </body>
 </html>

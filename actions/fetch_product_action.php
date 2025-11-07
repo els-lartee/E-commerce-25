@@ -6,7 +6,7 @@ session_start();
 require_once '../settings/core.php';
 require_once '../controllers/product_controller.php';
 
-if (!is_logged_in() || !is_admin()) {
+if (!is_logged_in()) {
     echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
     exit;
 }
