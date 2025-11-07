@@ -1,10 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-// include your db_connection class file
 require_once __DIR__ . '/../settings/db_class.php';
-
-// Create a new database object
 $db = new db_connection();
 
 // Try to connect
@@ -27,7 +24,6 @@ if ($db->db_connect()) {
     ];
 }
 
-// Output JSON response
 echo json_encode($response, JSON_PRETTY_PRINT);
 exit;
 ?>

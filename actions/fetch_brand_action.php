@@ -10,7 +10,6 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $brands = get_brands_by_user_ctr($user_id);
 
-// Debug logging
 error_log('Brands fetched: ' . print_r($brands, true));
 
 if ($brands === false || empty($brands)) {
@@ -18,7 +17,6 @@ if ($brands === false || empty($brands)) {
     exit;
 }
 
-// Filter out any empty or invalid brands
 $validBrands = array_filter($brands, function($brand) {
     return !empty($brand['brand_id']) && !empty($brand['brand_name']);
 });

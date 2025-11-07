@@ -107,5 +107,13 @@ class Jewellery extends db_connection
         $stmt->bind_param("ii", $id, $user_id);
         return $stmt->execute();
     }
+
+    public function getAllJewelleryPublic()
+    {
+        $stmt = $this->db->prepare("SELECT id, name FROM jewellery ORDER BY name ASC");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 }
 ?>

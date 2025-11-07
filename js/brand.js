@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const cat_id = document.getElementById('cat_id').value;
 
         if (!brand_name || !cat_id) {
-            alert("Please fill all fields.");
+            Swal.fire('Error', 'Please fill all fields.', 'error');
             return;
         }
 
@@ -17,9 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(res => res.text())
         .then(msg => {
-            alert(msg);
+            Swal.fire('Success', msg, 'success');
             loadBrands();
             document.getElementById('brandForm').reset();
+        })
+        .catch(error => {
+            Swal.fire('Error', 'Failed to add brand', 'error');
         });
     });
 });
@@ -30,19 +33,33 @@ function loadBrands() {
         .then(data => {
             const tbody = document.querySelector('#brandTable tbody');
             tbody.innerHTML = '';
-            data.forEach(row => {
+            
+            // Handle both response formats
+            const brands = data.brands || data;
+            
+            if (!brands || brands.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No brands found.</td></tr>';
+                return;
+            }
+            
+            brands.forEach(row => {
                 tbody.innerHTML += `
                     <tr>
                         <td>${row.brand_id}</td>
                         <td contenteditable="true" onblur="updateBrand(${row.brand_id}, this.innerText)">
                             ${row.brand_name}
                         </td>
-                        <td>${row.cat_name}</td>
+                        <td>${row.cat_name || 'N/A'}</td>
                         <td>
-                            <button onclick="deleteBrand(${row.brand_id})">Delete</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteBrand(${row.brand_id})">Delete</button>
                         </td>
                     </tr>`;
             });
+        })
+        .catch(error => {
+            console.error('Error loading brands:', error);
+            const tbody = document.querySelector('#brandTable tbody');
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Error loading brands</td></tr>';
         });
 }
 
@@ -52,19 +69,37 @@ function updateBrand(brand_id, brand_name) {
         body: new URLSearchParams({ brand_id, brand_name })
     })
     .then(res => res.text())
-    .then(alert);
+    .then(msg => {
+        Swal.fire('Success', msg, 'success');
+    })
+    .catch(error => {
+        Swal.fire('Error', 'Failed to update brand', 'error');
+    });
 }
 
 function deleteBrand(brand_id) {
-    if (confirm('Are you sure you want to delete this brand?')) {
-        fetch('../actions/delete_brand_action.php', {
-            method: 'POST',
-            body: new URLSearchParams({ brand_id })
-        })
-        .then(res => res.text())
-        .then(msg => {
-            alert(msg);
-            loadBrands();
-        });
-    }
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'Delete this brand?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('../actions/delete_brand_action.php', {
+                method: 'POST',
+                body: new URLSearchParams({ brand_id })
+            })
+            .then(res => res.text())
+            .then(msg => {
+                Swal.fire('Deleted!', msg, 'success');
+                loadBrands();
+            })
+            .catch(error => {
+                Swal.fire('Error', 'Failed to delete brand', 'error');
+            });
+        }
+    });
 }

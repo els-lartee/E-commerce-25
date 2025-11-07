@@ -7,94 +7,302 @@ require_once 'settings/core.php';
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Home</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<title>Home - E-Commerce Store</title>
 	<style>
-		.menu-tray {
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+		body {
+			font-family: Arial, sans-serif;
+			line-height: 1.6;
+			color: #333;
+			background: #f4f4f4;
+		}
+		.navbar {
+			background: white;
+			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 			position: fixed;
-			top: 16px;
-			right: 16px;
-			background: rgba(255,255,255,0.95);
-			border: 1px solid #e6e6e6;
-			border-radius: 8px;
-			padding: 6px 10px;
-			box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+			top: 0;
+			left: 0;
+			right: 0;
 			z-index: 1000;
 		}
-		.menu-tray a { margin-left: 8px; }
+		.nav-container {
+			max-width: 1200px;
+			margin: 0 auto;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 15px 20px;
+			flex-wrap: wrap;
+			gap: 15px;
+		}
+		.navbar-brand {
+			font-size: 24px;
+			font-weight: bold;
+			color: #007bff;
+			text-decoration: none;
+		}
+		.nav-links {
+			display: flex;
+			align-items: center;
+			gap: 20px;
+			flex-wrap: wrap;
+		}
+		.nav-links a {
+			text-decoration: none;
+			color: #333;
+			padding: 8px 15px;
+			border-radius: 4px;
+		}
+		.nav-links a:hover {
+			background: #f8f9fa;
+		}
+		.search-form {
+			display: flex;
+			gap: 5px;
+		}
+		.search-form input {
+			padding: 8px 12px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			width: 200px;
+		}
+		.btn {
+			padding: 8px 15px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 14px;
+		}
+		.btn-primary {
+			background: #007bff;
+			color: white;
+		}
+		.btn-primary:hover {
+			background: #0056b3;
+		}
+		.btn-secondary {
+			background: #6c757d;
+			color: white;
+		}
+		.btn-secondary:hover {
+			background: #5a6268;
+		}
+		.btn-success {
+			background: #28a745;
+			color: white;
+		}
+		.btn-success:hover {
+			background: #218838;
+		}
+		.btn-danger {
+			background: #dc3545;
+			color: white;
+		}
+		.btn-danger:hover {
+			background: #c82333;
+		}
+		.btn-info {
+			background: #17a2b8;
+			color: white;
+		}
+		.btn-info:hover {
+			background: #138496;
+		}
+		.btn-lg {
+			padding: 12px 24px;
+			font-size: 18px;
+		}
+		.container {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 20px;
+			padding-top: 100px;
+		}
+		.welcome-section {
+			text-align: center;
+			margin-bottom: 50px;
+		}
+		.welcome-section h1 {
+			font-size: 36px;
+			margin-bottom: 15px;
+		}
+		.welcome-section p {
+			color: #6c757d;
+			font-size: 18px;
+			margin-bottom: 20px;
+		}
+		.section-title {
+			text-align: center;
+			margin-bottom: 30px;
+			font-size: 28px;
+		}
+		.products-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+			gap: 20px;
+		}
+		.product-card {
+			background: white;
+			border-radius: 8px;
+			overflow: hidden;
+			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+			transition: transform 0.2s, box-shadow 0.2s;
+		}
+		.product-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+		}
+		.product-image {
+			width: 100%;
+			height: 200px;
+			object-fit: cover;
+		}
+		.product-image-placeholder {
+			width: 100%;
+			height: 200px;
+			background: #f8f9fa;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #6c757d;
+		}
+		.product-body {
+			padding: 15px;
+		}
+		.product-title {
+			font-size: 18px;
+			font-weight: bold;
+			margin-bottom: 10px;
+		}
+		.product-price {
+			font-size: 20px;
+			color: #28a745;
+			font-weight: bold;
+			margin-bottom: 8px;
+		}
+		.product-meta {
+			font-size: 14px;
+			color: #6c757d;
+			margin-bottom: 15px;
+		}
+		.alert {
+			padding: 15px;
+			border-radius: 4px;
+			margin-bottom: 20px;
+		}
+		.alert-danger {
+			background: #f8d7da;
+			color: #721c24;
+			border: 1px solid #f5c6cb;
+		}
+		.alert-info {
+			background: #d1ecf1;
+			color: #0c5460;
+			border: 1px solid #bee5eb;
+		}
+		@media (max-width: 768px) {
+			.nav-container {
+				flex-direction: column;
+				align-items: stretch;
+			}
+			.nav-links {
+				flex-direction: column;
+				gap: 10px;
+			}
+			.search-form {
+				flex-direction: column;
+			}
+			.search-form input {
+				width: 100%;
+			}
+			.products-grid {
+				grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+			}
+		}
 	</style>
 </head>
 <body>
 
-	<div class="menu-tray">
-		<span class="me-2">Menu:</span>
-		<?php if (isset($_SESSION['user_id'])): ?>
-			<span class="me-2">Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</span>
-			<?php if (is_admin()): ?>
-				<a href="admin/jewellery.php" class="btn btn-sm btn-outline-info">Jewellery</a>
-				<a href="admin/brand.php" class="btn btn-sm btn-outline-info">Brand</a>
-				<a href="admin/products.php" class="btn btn-sm btn-outline-info">Products</a>
-			<?php endif; ?>
-			<a href="login/logout.php" class="btn btn-sm btn-outline-danger">Logout</a>
-		<?php else: ?>
-			<a href="login/register.php" class="btn btn-sm btn-outline-primary">Register</a>
-			<a href="login/login.php" class="btn btn-sm btn-outline-secondary">Login</a>
-		<?php endif; ?>
-	</div>
-
-	<div class="container" style="padding-top:120px;">
-		<div class="text-center">
-			<h1>Welcome</h1>
-			<p class="text-muted">Use the menu in the top-right to Register or Login.</p>
-		</div>
-		<?php if (isset($_SESSION['user_id']) && !is_admin()): ?>
-			<div class="mt-5">
-				<h2>Available Products</h2>
-				<div id="productsContainer" class="row"></div>
+	<nav class="navbar">
+		<div class="nav-container">
+			<a class="navbar-brand" href="index.php">E-Commerce Store</a>
+			<div class="nav-links">
+				<!-- <a href="index.php">Home</a>
+				<a href="view/all_product.php">All Products</a> -->
+				<form class="search-form" action="view/product_search_result.php" method="GET">
+					<input type="search" name="q" placeholder="Search products..." required>
+					<button class="btn btn-primary" type="submit">Search</button>
+				</form>
+				<?php if (isset($_SESSION['user_id'])): ?>
+					<span style="color: #6c757d;">Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</span>
+					<?php if (is_admin()): ?>
+						<a href="admin/jewellery.php" class="btn btn-info">Jewellery</a>
+						<a href="admin/brand.php" class="btn btn-info">Brand</a>
+						<a href="admin/products.php" class="btn btn-info">Products</a>
+					<?php endif; ?>
+					<a href="login/logout.php" class="btn btn-danger">Logout</a>
+				<?php else: ?>
+					<a href="login/register.php" class="btn btn-primary">Register</a>
+					<a href="login/login.php" class="btn btn-secondary">Login</a>
+				<?php endif; ?>
 			</div>
-		<?php endif; ?>
-	</div>
+		</div>
+	</nav>
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<div class="container">
+		<div class="welcome-section">
+			<h1>Welcome to Our Store</h1>
+			<p>Browse our collection of quality products</p>
+			<a href="view/all_product.php" class="btn btn-primary btn-lg">Shop Now</a>
+		</div>
+
+		<div>
+			<h2 class="section-title">Featured Products</h2>
+			<div id="productsContainer" class="products-grid"></div>
+		</div>
+	</div>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
 		$(document).ready(function(){
-			<?php if (isset($_SESSION['user_id']) && !is_admin()): ?>
-				loadProducts();
-			<?php endif; ?>
+			loadProducts();
 		});
 
 		function loadProducts() {
-			$.getJSON('actions/fetch_product_action.php', function(resp){
+			$.getJSON('actions/view_all_products_action.php', function(resp){
 				if (resp.status !== 'success') {
-					$('#productsContainer').html('<div class="alert alert-danger">Failed to load products</div>');
+					$('#productsContainer').html('<div class="alert alert-danger" style="grid-column: 1 / -1;">Failed to load products</div>');
 					return;
 				}
 				const products = resp.products || [];
 				if (products.length === 0) {
-					$('#productsContainer').html('<div class="alert alert-info">No products available.</div>');
+					$('#productsContainer').html('<div class="alert alert-info" style="grid-column: 1 / -1;">No products available.</div>');
 					return;
 				}
+				const featuredProducts = products.slice(0, 6);
 				let html = '';
-				products.forEach(p => {
-					const img = p.product_image ? `<img src="${p.product_image}" class="card-img-top" style="height:200px; object-fit:cover;" alt="${p.product_title}">` : '<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:200px;"><span class="text-muted">No Image</span></div>';
+				featuredProducts.forEach(p => {
+					const img = p.product_image ? `<img src="${p.product_image}" class="product-image" alt="${p.product_title}">` : '<div class="product-image-placeholder">No Image</div>';
 					html += `
-						<div class="col-md-4 mb-4">
-							<div class="card h-100">
-								${img}
-								<div class="card-body">
-									<h5 class="card-title">${p.product_title}</h5>
-									<p class="card-text"><strong>Price:</strong> $${p.product_price}</p>
-									<p class="card-text">${p.product_desc || 'No description available.'}</p>
-									<p class="card-text"><small class="text-muted">Category: ${p.cat_name} | Brand: ${p.brand_name}</small></p>
-								</div>
+						<div class="product-card">
+							${img}
+							<div class="product-body">
+								<div class="product-title">${p.product_title}</div>
+								<div class="product-price">$${parseFloat(p.product_price).toFixed(2)}</div>
+								<div class="product-meta">Category: ${p.cat_name || 'N/A'} | Brand: ${p.brand_name || 'N/A'}</div>
+								<a href="view/single_product.php?id=${p.product_id}" class="btn btn-primary">View Details</a>
 							</div>
 						</div>
 					`;
 				});
 				$('#productsContainer').html(html);
 			}).fail(function(){
-				$('#productsContainer').html('<div class="alert alert-danger">Error loading products</div>');
+				$('#productsContainer').html('<div class="alert alert-danger" style="grid-column: 1 / -1;">Error loading products</div>');
 			});
 		}
 	</script>

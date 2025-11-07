@@ -40,76 +40,249 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register - Taste of Africa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - E-Commerce Store</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../js/register.js"></script>
     <style>
-        /* your same CSS styles here */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            background-image:
+                repeating-linear-gradient(0deg,
+                    #b77a7a,
+                    #b77a7a 1px,
+                    transparent 1px,
+                    transparent 20px),
+                repeating-linear-gradient(90deg,
+                    #b77a7a,
+                    #b77a7a 1px,
+                    transparent 1px,
+                    transparent 20px),
+                linear-gradient(rgba(183, 122, 122, 0.1),
+                    rgba(183, 122, 122, 0.1));
+            background-blend-mode: overlay;
+            background-size: 20px 20px;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 500px;
+            animation: fadeInDown 0.8s;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: zoomIn 0.8s;
+        }
+
+        .card-header {
+            background-color: #D19C97;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card-header h4 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .card-footer {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        label i {
+            margin-left: 5px;
+            color: #b77a7a;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #D19C97;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-option input[type="radio"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .radio-option label {
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .btn-custom {
+            width: 100%;
+            background-color: #D19C97;
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            animation: pulse 2s infinite;
+        }
+
+        .btn-custom:hover {
+            background-color: #b77a7a;
+        }
+
+        .highlight {
+            color: #D19C97;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .highlight:hover {
+            color: #b77a7a;
+            text-decoration: underline;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
     </style>
 </head>
-
 <body>
-    <div class="container register-container">
-        <div class="row justify-content-center animate__animated animate__fadeInDown">
-            <div class="col-md-6">
-                <div class="card animate__animated animate__zoomIn">
-                    <div class="card-header text-center highlight">
-                        <h4>Register</h4>
+    <div class="register-container">
+        <div class="card">
+            <div class="card-header">
+                <h4>Register</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="register-form">
+                    <div class="form-group">
+                        <label for="name">Name <i class="fa fa-user"></i></label>
+                        <input type="text" id="name" name="name" required maxlength="100">
                     </div>
-                    <div class="card-body">
-                        <!-- ✅ Post form directly to same PHP file -->
-                        <form method="POST" class="mt-4" id="register-form">
-                            <div class="mb-3">
-                                <label for="name" class="form-label">Name <i class="fa fa-user"></i></label>
-                                <input type="text" class="form-control" id="name" name="name" required maxlength="100">
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email <i class="fa fa-envelope"></i></label>
-                                <input type="email" class="form-control" id="email" name="email" required maxlength="50">
-                            </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password <i class="fa fa-lock"></i></label>
-                                <input type="password" class="form-control" id="password" name="password" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="country" class="form-label">Country <i class="fa fa-flag"></i></label>
-                                <input type="text" class="form-control" id="country" name="country" required maxlength="30">
-                            </div>
-                            <div class="mb-3">
-                                <label for="city" class="form-label">City <i class="fa fa-city"></i></label>
-                                <input type="text" class="form-control" id="city" name="city" required maxlength="30">
-                            </div>
-                            <div class="mb-3">
-                                <label for="phone_number" class="form-label">Phone Number <i class="fa fa-phone"></i></label>
-                                <input type="text" class="form-control" id="phone_number" name="phone_number" required maxlength="15">
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label">Register As</label>
-                                <div class="d-flex justify-content-start">
-                                    <div class="form-check me-3 custom-radio">
-                                        <input class="form-check-input" type="radio" name="role" id="customer" value="1" checked>
-                                        <label class="form-check-label" for="customer">Customer</label>
-                                    </div>
-                                    <div class="form-check custom-radio">
-                                        <input class="form-check-input" type="radio" name="role" id="owner" value="2">
-                                        <label class="form-check-label" for="owner">Restaurant Owner</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-custom w-100 animate-pulse-custom">Register</button>
-                        </form>
+                    <div class="form-group">
+                        <label for="email">Email <i class="fa fa-envelope"></i></label>
+                        <input type="email" id="email" name="email" required maxlength="50">
                     </div>
-                    <div class="card-footer text-center">
-                        Already have an account? <a href="login.php" class="highlight">Login here</a>.
+                    <div class="form-group">
+                        <label for="password">Password <i class="fa fa-lock"></i></label>
+                        <input type="password" id="password" name="password" required>
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label for="country">Country <i class="fa fa-flag"></i></label>
+                        <input type="text" id="country" name="country" required maxlength="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City <i class="fa fa-city"></i></label>
+                        <input type="text" id="city" name="city" required maxlength="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number <i class="fa fa-phone"></i></label>
+                        <input type="text" id="phone_number" name="phone_number" required maxlength="15">
+                    </div>
+                    <div class="form-group">
+                        <label>Register As</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="role" id="customer" value="1" checked>
+                                <label for="customer">Customer</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="role" id="owner" value="2">
+                                <label for="owner">Restaurant Owner</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-custom">Register</button>
+                </form>
+            </div>
+            <div class="card-footer">
+                Already have an account? <a href="login.php" class="highlight">Login here</a>.
             </div>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/register.js"></script>
 </body>
 </html>

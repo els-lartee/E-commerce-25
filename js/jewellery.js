@@ -50,7 +50,7 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.status === 'success') {
                     Swal.fire('Success', response.message, 'success');
-                    $('#editJewelleryModal').modal('hide');
+                    closeModal('editJewelleryModal');
                     fetchJewellery();
                 } else {
                     Swal.fire('Error', response.message, 'error');
@@ -106,7 +106,7 @@ $(document).ready(function() {
         const name = $(this).data('name');
         $('#editJewelleryId').val(id);
         $('#editJewelleryName').val(name);
-        $('#editJewelleryModal').modal('show');
+        showModal('editJewelleryModal');
     });
 });
 

@@ -1,39 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>Login - Taste of Africa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - E-Commerce Store</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <style>
-        .btn-custom {
-            background-color: #D19C97;
-            border-color: #D19C97;
-            color: #fff;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-
-        .btn-custom:hover {
-            background-color: #b77a7a;
-            border-color: #b77a7a;
-        }
-
-        .highlight {
-            color: #D19C97;
-            transition: color 0.3s;
-        }
-
-        .highlight:hover {
-            color: #b77a7a;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            /* Base background color */
             background-color: #f8f9fa;
-
-            /* Gradient-like grid using repeating-linear-gradients */
             background-image:
                 repeating-linear-gradient(0deg,
                     #b77a7a,
@@ -47,116 +27,191 @@
                     transparent 20px),
                 linear-gradient(rgba(183, 122, 122, 0.1),
                     rgba(183, 122, 122, 0.1));
-
-            /* Blend the gradients for a subtle overlay effect */
             background-blend-mode: overlay;
-
-            /* Define the size of the grid */
             background-size: 20px 20px;
-
-            /* Ensure the background covers the entire viewport */
             min-height: 100vh;
-            margin: 0;
-            padding: 0;
             font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
         .login-container {
-            margin-top: 100px;
+            width: 100%;
+            max-width: 500px;
+            animation: fadeInDown 0.8s;
         }
 
         .card {
-            border: none;
+            background: white;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: zoomIn 0.8s;
         }
 
         .card-header {
             background-color: #D19C97;
-            color: #fff;
+            color: white;
+            padding: 20px;
+            text-align: center;
         }
 
-        .animate-pulse-custom {
-            animation: pulse 2s infinite;
+        .card-header h4 {
+            margin: 0;
+            font-size: 24px;
         }
 
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-
-            100% {
-                transform: scale(1);
-            }
+        .card-body {
+            padding: 30px;
         }
 
-        /* Additional Styling for Enhanced Appearance */
-        .form-label i {
+        .card-footer {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        label i {
             margin-left: 5px;
             color: #b77a7a;
         }
 
-        .alert-info {
-            animation: fadeIn 1s;
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #D19C97;
+        }
+
+        .btn-custom {
+            width: 100%;
+            background-color: #D19C97;
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            animation: pulse 2s infinite;
+        }
+
+        .btn-custom:hover {
+            background-color: #b77a7a;
+        }
+
+        .highlight {
+            color: #D19C97;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .highlight:hover {
+            color: #b77a7a;
+            text-decoration: underline;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
             }
-
             to {
                 opacity: 1;
             }
         }
+
+        .alert-info {
+            padding: 15px;
+            background: #d1ecf1;
+            color: #0c5460;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: fadeIn 1s;
+        }
     </style>
 </head>
-
 <body>
-    <div class="container login-container">
-        <div class="row justify-content-center animate__animated animate__fadeInDown">
-            <div class="col-md-6">
-                <div class="card animate__animated animate__zoomIn">
-                    <div class="card-header text-center highlight">
-                        <h4>Login</h4>
+    <div class="login-container">
+        <div class="card">
+            <div class="card-header">
+                <h4>Login</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="" id="login-form">
+                    <div class="form-group">
+                        <label for="email">Email <i class="fa fa-envelope"></i></label>
+                        <input type="email" id="email" name="email" required>
                     </div>
-                    <div class="card-body">
-                        <!-- Alert Messages (To be handled by backend) -->
-                        <!-- Example:
-                        <div class="alert alert-info text-center">Login successful!</div>
-                        -->
-
-                        <form method="POST" action="" class="mt-4" id="login-form">
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email <i class="fa fa-envelope"></i></label>
-                                <input type="email" class="form-control animate__animated animate__fadeInUp" id="email" name="email" required>
-                            </div>
-                            <div class="mb-4">
-                                <label for="password" class="form-label">Password <i class="fa fa-lock"></i></label>
-                                <input type="password" class="form-control animate__animated animate__fadeInUp" id="password" name="password" required>
-                            </div>
-                            <button type="submit" class="btn btn-custom w-100 animate-pulse-custom">Login</button>
-                        </form>
+                    <div class="form-group">
+                        <label for="password">Password <i class="fa fa-lock"></i></label>
+                        <input type="password" id="password" name="password" required>
                     </div>
-                    <div class="card-footer text-center">
-                        Don't have an account? <a href="register.php" class="highlight">Register here</a>.
-                    </div>
-                </div>
+                    <button type="submit" class="btn-custom">Login</button>
+                </form>
+            </div>
+            <div class="card-footer">
+                Don't have an account? <a href="register.php" class="highlight">Register here</a>.
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/login.js"></script>
-
-    
 </body>
-
 </html>

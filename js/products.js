@@ -7,27 +7,27 @@
     function loadProducts() {
         $.getJSON('../actions/fetch_product_action.php', function(resp){
             if (resp.status !== 'success') {
-                $container.html('<div class="alert alert-danger">Failed to load products</div>');
+                $container.html('<div style="padding:15px;background:#f8d7da;color:#721c24;border-radius:4px;margin-bottom:20px;">Failed to load products</div>');
                 return;
             }
             const products = resp.products || [];
             if (products.length === 0) {
-                $container.html('<div class="alert alert-info">No products yet.</div>');
+                $container.html('<div style="padding:15px;background:#d1ecf1;color:#0c5460;border-radius:4px;margin-bottom:20px;">No products yet.</div>');
                 return;
             }
-            let html = '<div class="table-responsive"><table class="table table-striped">';
+            let html = '<table>';
             html += '<thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Brand</th><th>Price</th><th>Image</th><th>Actions</th></tr></thead><tbody>';
             products.forEach(p => {
-                const img = p.product_image ? `<img src="../${escapeHtml(p.product_image)}" style="max-height:50px">` : '';
+                const img = p.product_image ? `<img src="../${escapeHtml(p.product_image)}" class="product-image-small">` : '';
                 html += `<tr><td>${p.product_id}</td><td>${escapeHtml(p.product_title)}</td><td>${escapeHtml(p.cat_name)}</td><td>${escapeHtml(p.brand_name)}</td><td>${p.product_price}</td><td>${img}</td><td>`;
-                html += `<button class="btn btn-sm btn-outline-secondary me-2 editProductBtn" data-json='${JSON.stringify(p)}'>Edit</button>`;
-                html += `<button class="btn btn-sm btn-outline-danger deleteProductBtn" data-id="${p.product_id}">Delete</button>`;
+                html += `<button class="btn btn-warning btn-sm editProductBtn" data-json='${JSON.stringify(p)}' style="margin-right:5px;">Edit</button>`;
+                html += `<button class="btn btn-danger btn-sm deleteProductBtn" data-id="${p.product_id}">Delete</button>`;
                 html += `</td></tr>`;
             });
-            html += '</tbody></table></div>';
+            html += '</tbody></table>';
             $container.html(html);
         }).fail(function(){
-            $container.html('<div class="alert alert-danger">Error loading products</div>');
+            $container.html('<div style="padding:15px;background:#f8d7da;color:#721c24;border-radius:4px;margin-bottom:20px;">Error loading products</div>');
         });
     }
 
@@ -114,8 +114,7 @@
         $('#edit_product_keywords').val(p.product_keywords);
         $('#edit_product_cat').val(p.product_cat);
         $('#edit_product_brand').val(p.product_brand);
-        const modal = new bootstrap.Modal(document.getElementById('editProductModal'));
-        modal.show();
+        showModal('editProductModal');
     });
 
     // Update product
@@ -132,8 +131,7 @@
             success(resp){
                 if (resp.status === 'success') {
                     Swal.fire('Success', resp.message, 'success');
-                    const modalInstance = bootstrap.Modal.getInstance(document.getElementById('editProductModal'));
-                    if (modalInstance) modalInstance.hide();
+                    closeModal('editProductModal');
                     loadProducts();
                 } else {
                     Swal.fire('Error', resp.message, 'error');

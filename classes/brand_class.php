@@ -50,11 +50,12 @@ class brand_class extends db_connection
             return false;
         }
 
-        // First, get all brands for the user without requiring a join
-        $sql = "SELECT brand_id, brand_name, cat_id 
-                FROM brands 
-                WHERE user_id = ?
-                ORDER BY brand_name ASC";
+        // Join with jewellery table to get category name
+        $sql = "SELECT b.brand_id, b.brand_name, b.cat_id, j.name as cat_name 
+                FROM brands b
+                LEFT JOIN jewellery j ON b.cat_id = j.id
+                WHERE b.user_id = ?
+                ORDER BY b.brand_name ASC";
         
         $stmt = mysqli_prepare($conn, $sql);
         if (!$stmt) {
@@ -98,9 +99,6 @@ class brand_class extends db_connection
         return $this->db_write_query($sql);
     }
 
-    /**
-     * Fetch all jewellery categories (for dropdown)
-     */
     public function get_categories()
     {
         $conn = $this->db_conn();
@@ -110,6 +108,25 @@ class brand_class extends db_connection
         }
         
         $sql = "SELECT id, name FROM jewellery ORDER BY name ASC";
+        $result = mysqli_query($conn, $sql);
+        
+        if (!$result) {
+            error_log("Query failed: " . mysqli_error($conn));
+            return false;
+        }
+        
+        return mysqli_fetch_all($result, MYSQLI_ASSOC);
+    }
+
+    public function getAllBrandsPublic()
+    {
+        $conn = $this->db_conn();
+        if (!$conn) {
+            error_log("Database connection failed in getAllBrandsPublic");
+            return false;
+        }
+        
+        $sql = "SELECT brand_id, brand_name, cat_id FROM brands ORDER BY brand_name ASC";
         $result = mysqli_query($conn, $sql);
         
         if (!$result) {
