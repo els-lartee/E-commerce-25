@@ -58,9 +58,12 @@ $categories = get_jewellery_ctr($_SESSION['user_id']);
         }
         .form-row {
             display: grid;
-            grid-template-columns: 2fr 2fr 1fr;
+            grid-template-columns: 1fr 1fr auto;
             gap: 15px;
             align-items: end;
+        }
+        .form-row button {
+            white-space: nowrap;
         }
         .form-group {
             margin-bottom: 15px;
@@ -174,7 +177,10 @@ $categories = get_jewellery_ctr($_SESSION['user_id']);
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">Add Brand</button>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button type="submit" class="btn btn-primary">Add Brand</button>
+                        </div>
                     </div>
                 </form>
             </div>
