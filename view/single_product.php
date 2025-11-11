@@ -46,6 +46,20 @@
         .breadcrumb a:hover {
             text-decoration: underline;
         }
+        .cart-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .cart-count {
+            background: #007bff;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 50%;
+            font-size: 12px;
+            min-width: 20px;
+            text-align: center;
+        }
         .product-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -168,11 +182,16 @@
             <li>Product Details</li>
         </ul>
 
+        <div class="cart-info" style="text-align: right; margin-bottom: 20px;">
+            <a href="../view/cart.php" class="btn btn-secondary">View Cart (<span id="cart-count">0</span>)</a>
+        </div>
+
         <div id="productDetails">
             <p style="text-align: center;">Loading product details...</p>
         </div>
     </div>
 
+    <script src="../js/cart.js" defer></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {

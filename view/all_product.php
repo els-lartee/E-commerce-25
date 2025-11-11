@@ -30,6 +30,20 @@
         .header h2 {
             color: #333;
         }
+        .cart-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .cart-count {
+            background: #007bff;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 50%;
+            font-size: 12px;
+            min-width: 20px;
+            text-align: center;
+        }
         .btn {
             display: inline-block;
             padding: 10px 20px;
@@ -210,7 +224,10 @@
     <div class="container">
         <div class="header">
             <h2>All Products</h2>
-            <a href="../index.php" class="btn btn-secondary">Back to Home</a>
+            <div class="cart-info">
+                <a href="../view/cart.php" class="btn btn-secondary">View Cart (<span id="cart-count">0</span>)</a>
+                <a href="../index.php" class="btn btn-secondary">Back to Home</a>
+            </div>
         </div>
 
         <div class="filter-section">
@@ -242,6 +259,7 @@
         <ul id="pagination" class="pagination"></ul>
     </div>
 
+    <script src="../js/cart.js" defer></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         let allProducts = [];

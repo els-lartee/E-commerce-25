@@ -29,9 +29,11 @@ if (!is_numeric($qty) || $qty <= 0) {
 $result = add_to_cart_ctr($product_id, $qty);
 
 if ($result) {
+    $cart_count = get_cart_count_ctr();
     echo json_encode([
         'status' => 'success',
-        'message' => 'Product added to cart successfully'
+        'message' => 'Product added to cart successfully',
+        'cart_count' => $cart_count
     ]);
 } else {
     echo json_encode([

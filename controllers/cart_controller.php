@@ -29,3 +29,9 @@ function empty_cart_ctr() {
     $cart = new Cart();
     return $cart->empty_cart($customer_id);
 }
+
+function get_cart_count_ctr() {
+    $customer_id = get_user_id(); // null for guests
+    $cart = new Cart();
+    return $cart->get_cart_count($customer_id);
+}

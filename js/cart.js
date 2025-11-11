@@ -1,83 +1,88 @@
 // Cart management JavaScript
-$(document).ready(function() {
-    // Add to cart functionality
-    $(document).on('click', '.add-to-cart-btn', function(e) {
-        e.preventDefault();
-        const productId = $(this).data('product-id');
-        const qty = $(this).data('qty') || 1;
+document.addEventListener('DOMContentLoaded', () => {
+    // Add to cart functionality using event delegation
+    document.body.addEventListener('click', async e => {
+        const btn = e.target.closest('.btn-success');
+        if (!btn || !btn.hasAttribute('data-product-id')) return;
 
-        addToCart(productId, qty, $(this));
+        const productId = btn.getAttribute('data-product-id');
+        const qty = 1; // Default quantity
+
+        // Prevent multiple clicks
+        if (btn.disabled) return;
+
+        btn.disabled = true;
+        btn.textContent = 'Adding...';
+
+        try {
+            const response = await fetch('../actions/add_to_cart_action.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    product_id: productId,
+                    qty: qty
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                showMessage(data.message, 'success');
+                updateCartCount(data.cart_count);
+            } else {
+                showMessage(data.message || 'Failed to add product to cart', 'error');
+            }
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            showMessage('Error adding product to cart', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Add to Cart';
+        }
     });
 
     // Update cart count on page load
     updateCartCount();
 });
 
-function addToCart(productId, qty, buttonElement) {
-    // Disable button during request
-    if (buttonElement) {
-        buttonElement.prop('disabled', true).text('Adding...');
-    }
-
-    $.ajax({
-        url: '../actions/add_to_cart_action.php',
-        type: 'POST',
-        data: {
-            product_id: productId,
-            qty: qty
-        },
-        dataType: 'json',
-        success: function(response) {
-            if (response.status === 'success') {
-                showMessage('Product added to cart!', 'success');
-                updateCartCount();
-            } else {
-                showMessage(response.message || 'Failed to add product to cart', 'error');
-            }
-        },
-        error: function() {
-            showMessage('Error adding product to cart', 'error');
-        },
-        complete: function() {
-            // Re-enable button
-            if (buttonElement) {
-                buttonElement.prop('disabled', false).text('Add to Cart');
-            }
-        }
-    });
-}
-
-function updateCartCount() {
-    // This would typically fetch cart count from server
-    // For now, we'll just update any cart count displays
-    $('.cart-count').each(function() {
-        // Could fetch actual count here
-        // $(this).text(actualCount);
+function updateCartCount(count) {
+    const cartCountElements = document.querySelectorAll('#cart-count');
+    cartCountElements.forEach(element => {
+        element.textContent = count || 0;
     });
 }
 
 function showMessage(message, type) {
     // Remove existing messages
-    $('.cart-message').remove();
+    const existingMessages = document.querySelectorAll('.cart-message');
+    existingMessages.forEach(msg => msg.remove());
 
     // Create message element
-    const messageClass = type === 'success' ? 'alert-success' : 'alert-danger';
-    const messageHtml = `<div class="cart-message alert ${messageClass}" style="position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 15px; border-radius: 4px; max-width: 300px;">${message}</div>`;
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `cart-message alert ${type === 'success' ? 'alert-success' : 'alert-danger'}`;
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        padding: 15px;
+        border-radius: 4px;
+        max-width: 300px;
+        background: ${type === 'success' ? '#d4edda' : '#f8d7da'};
+        color: ${type === 'success' ? '#155724' : '#721c24'};
+        border: 1px solid ${type === 'success' ? '#c3e6cb' : '#f5c6cb'};
+    `;
+    messageDiv.textContent = message;
 
     // Add to body
-    $('body').append(messageHtml);
+    document.body.appendChild(messageDiv);
 
     // Auto-remove after 3 seconds
-    setTimeout(function() {
-        $('.cart-message').fadeOut(function() {
-            $(this).remove();
-        });
+    setTimeout(() => {
+        if (messageDiv.parentNode) {
+            messageDiv.remove();
+        }
     }, 3000);
 }
-
-// Export functions for use in other scripts
-window.CartManager = {
-    addToCart: addToCart,
-    updateCartCount: updateCartCount,
-    showMessage: showMessage
-};

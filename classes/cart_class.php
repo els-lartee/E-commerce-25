@@ -9,15 +9,15 @@ class Cart extends db_connection {
     /**
      * Add product to cart
      * For logged-in users: use c_id
-     * For guests: use ip_add
+     * For guests: use session_id
      * If product exists, update quantity
      */
     public function add_to_cart($customer_id, $product_id, $qty) {
         $conn = $this->db_conn();
         if (!$conn) return false;
 
-        // Determine identifier: customer_id or IP
-        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', $_SERVER['REMOTE_ADDR']];
+        // Determine identifier: customer_id or session_id
+        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', session_id()];
         list($id_field, $id_value) = $identifier;
 
         // Check if product already exists in cart
@@ -52,6 +52,27 @@ class Cart extends db_connection {
     }
 
     /**
+     * Get cart count for user
+     */
+    public function get_cart_count($customer_id) {
+        $conn = $this->db_conn();
+        if (!$conn) return 0;
+
+        // Determine identifier
+        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', session_id()];
+        list($id_field, $id_value) = $identifier;
+
+        $sql = "SELECT SUM(qty) as total FROM cart WHERE $id_field = ?";
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "s", $id_value);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $row = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+        return $row['total'] ?? 0;
+    }
+
+    /**
      * Remove item from cart
      */
     public function remove_from_cart($cart_id) {
@@ -74,7 +95,7 @@ class Cart extends db_connection {
         if (!$conn) return [];
 
         // Determine identifier
-        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', $_SERVER['REMOTE_ADDR']];
+        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', session_id()];
         list($id_field, $id_value) = $identifier;
 
         $sql = "SELECT c.*, p.product_title, p.product_price, p.product_image,
@@ -102,7 +123,7 @@ class Cart extends db_connection {
         if (!$conn) return false;
 
         // Determine identifier
-        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', $_SERVER['REMOTE_ADDR']];
+        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', session_id()];
         list($id_field, $id_value) = $identifier;
 
         $sql = "DELETE FROM cart WHERE $id_field = ?";
@@ -122,7 +143,7 @@ class Cart extends db_connection {
         if (!$conn) return false;
 
         // Determine identifier
-        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', $_SERVER['REMOTE_ADDR']];
+        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', session_id()];
         list($id_field, $id_value) = $identifier;
 
         $sql = "SELECT * FROM cart WHERE p_id = ? AND $id_field = ?";
