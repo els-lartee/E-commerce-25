@@ -414,3 +414,9 @@
 
 )
 
+[11-Nov-2025 16:15:10 UTC] PHP Warning:  require_once(../classes/cart_class.php): Failed to open stream: No such file or directory in /home/elsie.lartey/public_html/E-commerce-25/controllers/cart_controller.php on line 2
+[11-Nov-2025 16:15:10 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '../classes/cart_class.php' (include_path='.:/usr/share/php') in /home/elsie.lartey/public_html/E-commerce-25/controllers/cart_controller.php:2
+Stack trace:
+#0 Command line code(3): require_once()
+#1 {main}
+  thrown in /home/elsie.lartey/public_html/E-commerce-25/controllers/cart_controller.php on line 2
