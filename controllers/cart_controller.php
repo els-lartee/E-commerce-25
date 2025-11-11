@@ -9,13 +9,15 @@ function add_to_cart_ctr($product_id, $qty = 1) {
 }
 
 function update_cart_item_ctr($cart_id, $qty) {
+    $customer_id = get_user_id(); // null for guests
     $cart = new Cart();
-    return $cart->update_cart_quantity($cart_id, $qty);
+    return $cart->update_cart_quantity($customer_id, $cart_id, $qty);
 }
 
 function remove_from_cart_ctr($cart_id) {
+    $customer_id = get_user_id(); // null for guests
     $cart = new Cart();
-    return $cart->remove_from_cart($cart_id);
+    return $cart->remove_from_cart($customer_id, $cart_id);
 }
 
 function get_user_cart_ctr() {

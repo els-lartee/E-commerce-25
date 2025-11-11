@@ -38,14 +38,19 @@ class Cart extends db_connection {
 
     /**
      * Update cart item quantity
+     * Note: This method now requires customer_id to identify the user's cart
      */
-    public function update_cart_quantity($cart_id, $qty) {
+    public function update_cart_quantity($customer_id, $cart_id, $qty) {
         $conn = $this->db_conn();
         if (!$conn) return false;
 
-        $sql = "UPDATE cart SET qty = ? WHERE p_id = ?";
+        // Determine identifier
+        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', session_id()];
+        list($id_field, $id_value) = $identifier;
+
+        $sql = "UPDATE cart SET qty = ? WHERE p_id = ? AND $id_field = ?";
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "ii", $qty, $cart_id);
+        mysqli_stmt_bind_param($stmt, "iis", $qty, $cart_id, $id_value);
         $success = mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return $success;
@@ -74,14 +79,19 @@ class Cart extends db_connection {
 
     /**
      * Remove item from cart
+     * Note: This method now requires customer_id to identify the user's cart
      */
-    public function remove_from_cart($cart_id) {
+    public function remove_from_cart($customer_id, $cart_id) {
         $conn = $this->db_conn();
         if (!$conn) return false;
 
-        $sql = "DELETE FROM cart WHERE p_id = ?";
+        // Determine identifier
+        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', session_id()];
+        list($id_field, $id_value) = $identifier;
+
+        $sql = "DELETE FROM cart WHERE p_id = ? AND $id_field = ?";
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "i", $cart_id);
+        mysqli_stmt_bind_param($stmt, "is", $cart_id, $id_value);
         $success = mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return $success;
