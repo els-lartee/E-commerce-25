@@ -117,8 +117,7 @@
 
             <div class="actions">
                 <a href="cart.php" class="btn btn-primary">Try Again</a>
-                <a href="all_product.php" class="btn btn-secondary">Continue Shopping</a>
-                <a href="../index.php" class="btn btn-secondary">Back to Home</a>
+                <a href="../index.php" class="btn btn-secondary">Continue Shopping</a>
             </div>
         </div>
     </div>

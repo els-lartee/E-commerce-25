@@ -178,7 +178,6 @@
     <div class="container">
         <ul class="breadcrumb">
             <li><a href="../index.php">Home</a></li>
-            <li><a href="all_product.php">All Products</a></li>
             <li>Product Details</li>
         </ul>
 
@@ -203,7 +202,7 @@
                     <div class="alert alert-danger">
                         <h4>Error</h4>
                         <p>No product ID specified.</p>
-                        <a href="all_product.php" class="btn btn-primary">View All Products</a>
+                        <a href="../index.php" class="btn btn-primary">View All Products</a>
                     </div>
                 `);
                 return;
@@ -219,7 +218,7 @@
                         <div class="alert alert-danger">
                             <h4>Product Not Found</h4>
                             <p>The product you are looking for does not exist.</p>
-                            <a href="all_product.php">View All Products</a>
+                            <a href="../index.php">View All Products</a>
                         </div>
                     `);
                     return;
@@ -234,7 +233,7 @@
                     : `<div class="product-image-placeholder"><span>No Image Available</span></div>`;
 
                 const html = `
-                    <div class="product-container">
+                    <div class="product-container" data-product-card="${p.product_id}">
                         <div>
                             ${imageHtml}
                         </div>
@@ -260,11 +259,13 @@
                             ` : ''}
 
                             <div style="margin-top: 30px;">
-                                <button class="btn btn-success" data-product-id="${p.product_id}">
-                                    Add to Cart
-                                </button>
-                                <a href="all_product.php" class="btn btn-secondary">
-                                    Back to All Products
+                                <div class="product-actions">
+                                    <button class="btn btn-success btn-add-to-cart" data-product-id="${p.product_id}">
+                                        Add to Cart
+                                    </button>
+                                </div>
+                                <a href="../index.php" class="btn btn-secondary" style="margin-top: 10px; display: inline-block;">
+                                    Back to Products
                                 </a>
                             </div>
                         </div>
@@ -277,7 +278,7 @@
                     <div class="alert alert-danger">
                         <h4>Error</h4>
                         <p>Failed to load product details. Please try again later.</p>
-                        <a href="all_product.php">View All Products</a>
+                        <a href="../index.php">View All Products</a>
                     </div>
                 `);
             });

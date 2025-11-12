@@ -1,6 +1,6 @@
 <?php
-require_once '../classes/cart_class.php';
-require_once '../settings/core.php';
+require_once __DIR__ . '/../classes/cart_class.php';
+require_once __DIR__ . '/../settings/core.php';
 
 function add_to_cart_ctr($product_id, $qty = 1) {
     $customer_id = get_user_id(); // null for guests

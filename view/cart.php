@@ -227,7 +227,7 @@
     <div class="container">
         <div class="header">
             <h2>Shopping Cart</h2>
-            <a href="all_product.php" class="btn btn-secondary">Continue Shopping</a>
+            <a href="../index.php" class="btn btn-secondary">Continue Shopping</a>
         </div>
 
         <div id="cartContent">
@@ -237,6 +237,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../js/cart.js"></script>
+    <script src="../js/checkout.js"></script>
     <script>
         $(document).ready(function() {
             loadCart();

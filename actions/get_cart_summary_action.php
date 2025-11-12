@@ -1,6 +1,6 @@
 <?php
-require_once '../controllers/cart_controller.php';
-require_once '../settings/core.php';
+require_once __DIR__ . '/../controllers/cart_controller.php';
+require_once __DIR__ . '/../settings/core.php';
 
 header('Content-Type: application/json');
 

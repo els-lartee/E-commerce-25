@@ -22,6 +22,28 @@ $(document).ready(function() {
 });
 
 function showCheckoutModal() {
+    // Check if user is logged in first
+    $.ajax({
+        url: '../actions/check_login_status_action.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function(loginResponse) {
+            if (loginResponse.status !== 'success' || !loginResponse.logged_in) {
+                if (confirm('You must be logged in to checkout. Would you like to login now?')) {
+                    window.location.href = '../login/login.php';
+                }
+                return;
+            }
+            // User is logged in, proceed with checkout
+            displayCheckoutModal();
+        },
+        error: function() {
+            alert('Error checking login status. Please try again.');
+        }
+    });
+}
+
+function displayCheckoutModal() {
     // Create modal HTML
     const modalHtml = `
         <div id="checkout-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;">
@@ -29,7 +51,7 @@ function showCheckoutModal() {
                 <h3 style="margin-bottom: 20px; text-align: center;">Checkout</h3>
 
                 <div id="checkout-content">
-                    <p style="text-align: center;">Processing...</p>
+                    <p style="text-align: center;">Loading...</p>
                 </div>
 
                 <div style="text-align: center; margin-top: 20px;">

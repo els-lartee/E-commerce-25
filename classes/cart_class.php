@@ -1,5 +1,5 @@
 <?php
-require_once '../settings/db_class.php';
+require_once __DIR__ . '/../settings/db_class.php';
 
 class Cart extends db_connection {
     public function __construct() {
@@ -16,21 +16,19 @@ class Cart extends db_connection {
         $conn = $this->db_conn();
         if (!$conn) return false;
 
-        // Determine identifier: customer_id or session_id
-        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', session_id()];
-        list($id_field, $id_value) = $identifier;
+        $ip_add = session_id();
 
         // Check if product already exists in cart
         $existing = $this->check_existing_product($customer_id, $product_id);
         if ($existing) {
             // Update quantity
-            return $this->update_cart_quantity($existing['p_id'], $existing['qty'] + $qty);
+            return $this->update_cart_quantity($customer_id, $existing['p_id'], $existing['qty'] + $qty);
         }
 
-        // Add new item
-        $sql = "INSERT INTO cart (p_id, $id_field, qty) VALUES (?, ?, ?)";
+        // Add new item - both ip_add and c_id are always set
+        $sql = "INSERT INTO cart (p_id, ip_add, c_id, qty) VALUES (?, ?, ?, ?)";
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "isi", $product_id, $id_value, $qty);
+        mysqli_stmt_bind_param($stmt, "isii", $product_id, $ip_add, $customer_id, $qty);
         $success = mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return $success;
@@ -44,13 +42,18 @@ class Cart extends db_connection {
         $conn = $this->db_conn();
         if (!$conn) return false;
 
-        // Determine identifier
-        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', session_id()];
-        list($id_field, $id_value) = $identifier;
+        $ip_add = session_id();
 
-        $sql = "UPDATE cart SET qty = ? WHERE p_id = ? AND $id_field = ?";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "iis", $qty, $cart_id, $id_value);
+        if ($customer_id) {
+            $sql = "UPDATE cart SET qty = ? WHERE p_id = ? AND c_id = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "iii", $qty, $cart_id, $customer_id);
+        } else {
+            $sql = "UPDATE cart SET qty = ? WHERE p_id = ? AND ip_add = ? AND c_id IS NULL";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "iis", $qty, $cart_id, $ip_add);
+        }
+        
         $success = mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return $success;
@@ -63,13 +66,18 @@ class Cart extends db_connection {
         $conn = $this->db_conn();
         if (!$conn) return 0;
 
-        // Determine identifier
-        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', session_id()];
-        list($id_field, $id_value) = $identifier;
+        $ip_add = session_id();
 
-        $sql = "SELECT SUM(qty) as total FROM cart WHERE $id_field = ?";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "s", $id_value);
+        if ($customer_id) {
+            $sql = "SELECT SUM(qty) as total FROM cart WHERE c_id = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "i", $customer_id);
+        } else {
+            $sql = "SELECT SUM(qty) as total FROM cart WHERE ip_add = ? AND c_id IS NULL";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "s", $ip_add);
+        }
+        
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $row = mysqli_fetch_assoc($result);
@@ -85,13 +93,18 @@ class Cart extends db_connection {
         $conn = $this->db_conn();
         if (!$conn) return false;
 
-        // Determine identifier
-        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', session_id()];
-        list($id_field, $id_value) = $identifier;
+        $ip_add = session_id();
 
-        $sql = "DELETE FROM cart WHERE p_id = ? AND $id_field = ?";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "is", $cart_id, $id_value);
+        if ($customer_id) {
+            $sql = "DELETE FROM cart WHERE p_id = ? AND c_id = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "ii", $cart_id, $customer_id);
+        } else {
+            $sql = "DELETE FROM cart WHERE p_id = ? AND ip_add = ? AND c_id IS NULL";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "is", $cart_id, $ip_add);
+        }
+        
         $success = mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return $success;
@@ -104,20 +117,25 @@ class Cart extends db_connection {
         $conn = $this->db_conn();
         if (!$conn) return [];
 
-        // Determine identifier
-        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', session_id()];
-        list($id_field, $id_value) = $identifier;
+        $ip_add = session_id();
 
         $sql = "SELECT c.*, p.product_title, p.product_price, p.product_image,
                        j.name as cat_name, b.brand_name
                 FROM cart c
                 LEFT JOIN product p ON c.p_id = p.product_id
                 LEFT JOIN jewellery j ON p.product_cat = j.id
-                LEFT JOIN brands b ON p.product_brand = b.brand_id
-                WHERE c.$id_field = ?";
+                LEFT JOIN brands b ON p.product_brand = b.brand_id";
 
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "s", $id_value);
+        if ($customer_id) {
+            $sql .= " WHERE c.c_id = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "i", $customer_id);
+        } else {
+            $sql .= " WHERE c.ip_add = ? AND c.c_id IS NULL";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "s", $ip_add);
+        }
+
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $items = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -132,13 +150,18 @@ class Cart extends db_connection {
         $conn = $this->db_conn();
         if (!$conn) return false;
 
-        // Determine identifier
-        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', session_id()];
-        list($id_field, $id_value) = $identifier;
+        $ip_add = session_id();
 
-        $sql = "DELETE FROM cart WHERE $id_field = ?";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "s", $id_value);
+        if ($customer_id) {
+            $sql = "DELETE FROM cart WHERE c_id = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "i", $customer_id);
+        } else {
+            $sql = "DELETE FROM cart WHERE ip_add = ? AND c_id IS NULL";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "s", $ip_add);
+        }
+        
         $success = mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return $success;
@@ -152,13 +175,18 @@ class Cart extends db_connection {
         $conn = $this->db_conn();
         if (!$conn) return false;
 
-        // Determine identifier
-        $identifier = $customer_id ? ['c_id', $customer_id] : ['ip_add', session_id()];
-        list($id_field, $id_value) = $identifier;
+        $ip_add = session_id();
 
-        $sql = "SELECT * FROM cart WHERE p_id = ? AND $id_field = ?";
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "is", $product_id, $id_value);
+        if ($customer_id) {
+            $sql = "SELECT * FROM cart WHERE p_id = ? AND c_id = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "ii", $product_id, $customer_id);
+        } else {
+            $sql = "SELECT * FROM cart WHERE p_id = ? AND ip_add = ? AND c_id IS NULL";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "is", $product_id, $ip_add);
+        }
+        
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $item = mysqli_fetch_assoc($result);

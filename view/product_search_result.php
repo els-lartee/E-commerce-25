@@ -376,7 +376,7 @@
                 $('#productsContainer').html(`
                     <div class="alert alert-info" style="grid-column: 1 / -1;">
                         <h5>No products found</h5>
-                        <p>No products match your search for "${searchQuery}". Try a different search term or browse <a href="all_product.php">all products</a>.</p>
+                        <p>No products match your search for "${searchQuery}". Try a different search term or browse <a href="../index.php">all products</a>.</p>
                     </div>
                 `);
                 $('#pagination').html('');

@@ -1,6 +1,6 @@
 <?php
-require_once '../classes/order_class.php';
-require_once '../settings/core.php';
+require_once __DIR__ . '/../classes/order_class.php';
+require_once __DIR__ . '/../settings/core.php';
 
 function create_order_ctr($customer_id, $order_ref, $total_amount) {
     $order = new Order();

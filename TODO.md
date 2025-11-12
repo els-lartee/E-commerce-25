@@ -1,5 +1,0 @@
-- [x] Fix update_cart_quantity method to filter by user identifier
-- [x] Fix remove_from_cart method to filter by user identifier
-- [x] Update controller methods to pass customer_id to update and remove
-- [ ] Test add to cart functionality
-- [x] Add debugging tips in code comments

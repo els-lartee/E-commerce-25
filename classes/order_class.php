@@ -1,5 +1,5 @@
 <?php
-require_once '../settings/db_class.php';
+require_once __DIR__ . '/../settings/db_class.php';
 
 class Order extends db_connection {
     public function __construct() {
@@ -12,23 +12,38 @@ class Order extends db_connection {
      */
     public function create_order($customer_id, $order_ref, $total_amount) {
         $conn = $this->db_conn();
-        if (!$conn) return false;
+        if (!$conn) {
+            error_log("Order creation failed: No database connection");
+            return false;
+        }
 
         $order_date = date('Y-m-d');
         $order_status = 'pending'; // Will be updated to 'completed' after payment
+        
+        // Generate numeric invoice number (invoice_no is INT in database)
+        $invoice_no = time(); // Use timestamp as invoice number
 
         $sql = "INSERT INTO orders (customer_id, invoice_no, order_date, order_status)
                 VALUES (?, ?, ?, ?)";
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "isss", $customer_id, $order_ref, $order_date, $order_status);
+        
+        if (!$stmt) {
+            error_log("Order creation failed: SQL prepare error - " . mysqli_error($conn));
+            return false;
+        }
+        
+        mysqli_stmt_bind_param($stmt, "iiss", $customer_id, $invoice_no, $order_date, $order_status);
         $success = mysqli_stmt_execute($stmt);
 
         if ($success) {
             $order_id = mysqli_insert_id($conn);
             mysqli_stmt_close($stmt);
+            error_log("Order created successfully: order_id=$order_id, invoice_no=$invoice_no, customer_id=$customer_id");
             return $order_id;
         }
 
+        $error = mysqli_stmt_error($stmt);
+        error_log("Order creation failed: Execute error - $error");
         mysqli_stmt_close($stmt);
         return false;
     }

@@ -260,7 +260,7 @@
                     <div class="checkout-content">
                         <div class="alert alert-info">Your cart is empty.</div>
                         <div class="checkout-actions">
-                            <a href="all_product.php" class="btn btn-primary">Continue Shopping</a>
+                            <a href="../index.php" class="btn btn-primary">Continue Shopping</a>
                         </div>
                     </div>
                 `);

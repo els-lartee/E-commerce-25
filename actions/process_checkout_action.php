@@ -1,7 +1,7 @@
 <?php
-require_once '../controllers/cart_controller.php';
-require_once '../controllers/order_controller.php';
-require_once '../settings/core.php';
+require_once __DIR__ . '/../controllers/cart_controller.php';
+require_once __DIR__ . '/../controllers/order_controller.php';
+require_once __DIR__ . '/../settings/core.php';
 
 header('Content-Type: application/json');
 
@@ -33,13 +33,15 @@ foreach ($cart_items as $item) {
     $total += $item['product_price'] * $item['qty'];
 }
 
-// Generate unique order reference
-$order_ref = 'ORD-' . time() . '-' . $customer_id;
+// Generate unique order reference (numeric for invoice_no, string for display)
+$invoice_no = time(); // Numeric invoice number for database
+$order_ref = 'ORD-' . $invoice_no . '-' . $customer_id; // Display reference
 
 // Create order
-$order_id = create_order_ctr($customer_id, $order_ref, $total);
+$order_id = create_order_ctr($customer_id, $invoice_no, $total);
 
 if (!$order_id) {
+    error_log("Checkout failed for customer $customer_id: Failed to create order");
     echo json_encode([
         'status' => 'error',
         'message' => 'Failed to create order'

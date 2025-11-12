@@ -131,8 +131,7 @@
             </div>
 
             <div class="actions">
-                <a href="all_product.php" class="btn btn-primary">Continue Shopping</a>
-                <a href="../index.php" class="btn btn-secondary">Back to Home</a>
+                <a href="../index.php" class="btn btn-primary">Continue Shopping</a>
             </div>
         </div>
     </div>
