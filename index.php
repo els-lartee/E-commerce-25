@@ -80,6 +80,7 @@ Cart
 </div>
 
 <div class="container" style="padding-top:120px;">
+
 <?php if (!isset($_SESSION['user_id'])): ?>
 <!-- Welcome message for guests -->
 <div class="text-center">
@@ -95,8 +96,33 @@ Cart
 <?php else: ?>
 <!-- Products section for logged-in customers -->
 <div class="mt-3">
-<h2>Available Products</h2>
-<div id="productsContainer" class="row"></div>
+	<!-- Search and Filters -->
+	<div class="row mb-4">
+		<div class="col-md-4">
+			<form action="view/product_search_result.php" method="GET">
+				<div class="input-group">
+					<input name="q" type="search" class="form-control" placeholder="Search products..." required>
+					<button class="btn btn-primary" type="submit">Search</button>
+				</div>
+			</form>
+		</div>
+		<div class="col-md-3">
+			<select id="categoryFilter" class="form-select">
+				<option value="">All Categories</option>
+			</select>
+		</div>
+		<div class="col-md-3">
+			<select id="brandFilter" class="form-select">
+				<option value="">All Brands</option>
+			</select>
+		</div>
+		<div class="col-md-2">
+			<button id="clearFilters" class="btn btn-secondary w-100">Clear Filters</button>
+		</div>
+	</div>
+
+	<h2>Available Products</h2>
+	<div id="productsContainer" class="row"></div>
 </div>
 <?php endif; ?>
 </div>
@@ -105,10 +131,21 @@ Cart
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="js/cart.js" defer></script>
 <script>
+let allProducts = [];
+let filteredProducts = [];
+
 $(document).ready(function(){
 <?php if (isset($_SESSION['user_id']) && !is_admin()): ?>
 loadProducts();
 updateCartCount();
+loadFilters();
+
+$('#categoryFilter, #brandFilter').on('change', filterProducts);
+$('#clearFilters').on('click', function() {
+	$('#categoryFilter').val('');
+	$('#brandFilter').val('');
+	filterProducts();
+});
 <?php endif; ?>
 });
 
@@ -120,17 +157,68 @@ $('#cartCount').text(data.total_items || 0);
 });
 }
 
+function loadFilters() {
+	// Load categories
+	$.getJSON('actions/fetch_categories_public_action.php', function(resp) {
+		if (resp.status === 'success' && resp.categories) {
+			resp.categories.forEach(cat => {
+				$('#categoryFilter').append(`<option value="${cat.cat_id}">${cat.cat_name}</option>`);
+			});
+		}
+	});
+
+	// Load brands
+	$.getJSON('actions/fetch_brands_public_action.php', function(resp) {
+		if (resp.status === 'success' && resp.brands) {
+			resp.brands.forEach(brand => {
+				$('#brandFilter').append(`<option value="${brand.brand_id}">${brand.brand_name}</option>`);
+			});
+		}
+	});
+}
+
+function filterProducts() {
+	const categoryId = $('#categoryFilter').val();
+	const brandId = $('#brandFilter').val();
+
+	filteredProducts = allProducts.filter(product => {
+		let match = true;
+		if (categoryId && product.product_cat != categoryId) {
+			match = false;
+		}
+		if (brandId && product.product_brand != brandId) {
+			match = false;
+		}
+		return match;
+	});
+
+	displayProducts(filteredProducts);
+}
+
 function loadProducts() {
 $.getJSON('actions/fetch_product_action.php', function(resp){
 if (resp.status !== 'success') {
 $('#productsContainer').html('<div class="alert alert-danger">Failed to load products</div>');
 return;
 }
-const products = resp.products || [];
-if (products.length === 0) {
+allProducts = resp.products || [];
+filteredProducts = allProducts;
+if (allProducts.length === 0) {
 $('#productsContainer').html('<div class="alert alert-info">No products available.</div>');
 return;
 }
+displayProducts(filteredProducts);
+}).fail(function(){
+$('#productsContainer').html('<div class="alert alert-danger">Error loading products</div>');
+});
+}
+
+function displayProducts(products) {
+if (products.length === 0) {
+$('#productsContainer').html('<div class="alert alert-info">No products found matching your filters.</div>');
+return;
+}
+
 let html = '';
 products.forEach(p => {
 const img = p.product_image ? `<img src="${p.product_image}" class="card-img-top" style="height:200px; object-fit:cover;" alt="${p.product_title}">` : '<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:200px;"><span class="text-muted">No Image</span></div>';
@@ -143,7 +231,8 @@ ${img}
 <p class="card-text"><strong>Price:</strong> $${p.product_price}</p>
 <p class="card-text">${p.product_desc || 'No description available.'}</p>
 <p class="card-text"><small class="text-muted">Category: ${p.cat_name} | Brand: ${p.brand_name}</small></p>
-<div class="mt-3 product-actions">
+<a href="view/single_product.php?id=${p.product_id}" class="btn btn-info btn-sm mb-2 d-block">View Details</a>
+<div class="product-actions">
 <button class="btn btn-success btn-add-to-cart" data-product-id="${p.product_id}">
 Add to Cart
 </button>
@@ -154,9 +243,6 @@ Add to Cart
 `;
 });
 $('#productsContainer').html(html);
-}).fail(function(){
-$('#productsContainer').html('<div class="alert alert-danger">Error loading products</div>');
-});
 }
 </script>
 </body>
