@@ -1,0 +1,531 @@
+/* Golden Aura Jewelry - Premium E-commerce Styles */
+
+/* Import Google Fonts for brand typography */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: #2B2B2B; /* Charcoal for dark text */
+    background-color: #FFFFFF; /* Pure White background */
+    font-size: 16px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    color: #2B2B2B;
+    margin-bottom: 16px;
+}
+
+p {
+    color: #666666; /* Soft Gray for light text */
+    margin-bottom: 16px;
+}
+
+a {
+    color: #D4AF37; /* Soft Gold */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #B8941F; /* Darker gold on hover */
+}
+
+/* Container and Layout */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 24px; /* Generous white space */
+}
+
+/* Navigation Styles */
+.menu-tray {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #F9F5EC; /* Champagne Beige border */
+    border-radius: 12px; /* Rounded corners */
+    padding: 12px 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); /* Soft shadow */
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.menu-tray a {
+    margin-left: 12px;
+    color: #2B2B2B;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.menu-tray a:hover {
+    color: #D4AF37;
+}
+
+.cart-badge {
+    position: relative;
+    display: inline-block;
+}
+
+.cart-badge .badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #7A5C3E; /* Warm Brown */
+    color: #FFFFFF;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 12px; /* Rounded corners */
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease; /* Smooth transitions */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); /* Soft shadow */
+}
+
+.btn-primary {
+    background-color: #D4AF37; /* Soft Gold */
+    color: #FFFFFF;
+}
+
+.btn-primary:hover {
+    background-color: #B8941F;
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3); /* Gold glow */
+    transform: translateY(-2px);
+}
+
+.btn-outline-primary {
+    background-color: transparent;
+    color: #D4AF37;
+    border: 2px solid #D4AF37;
+}
+
+.btn-outline-primary:hover {
+    background-color: #D4AF37;
+    color: #FFFFFF;
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background-color: #7A5C3E; /* Warm Brown */
+    color: #FFFFFF;
+}
+
+.btn-success:hover {
+    background-color: #5D4429;
+    box-shadow: 0 4px 20px rgba(122, 92, 62, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: #F9F5EC; /* Champagne Beige */
+    color: #2B2B2B;
+    border: 1px solid #D4AF37;
+}
+
+.btn-secondary:hover {
+    background-color: #E8DCC0;
+    box-shadow: 0 4px 20px rgba(249, 245, 236, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background-color: #7A5C3E;
+    color: #FFFFFF;
+}
+
+.btn-danger:hover {
+    background-color: #5D4429;
+    box-shadow: 0 4px 20px rgba(122, 92, 62, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Card Styles (Product Items) */
+.card {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.card:hover {
+    transform: scale(1.03); /* Smooth scale animation */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    border-color: #D4AF37; /* Thin gold border on hover */
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: #2B2B2B;
+    margin-bottom: 8px;
+}
+
+.card-text {
+    color: #666666;
+    margin-bottom: 8px;
+}
+
+.card-text small {
+    color: #666666;
+    font-size: 14px;
+}
+
+/* Form Styles */
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #F9F5EC;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    background-color: #FFFFFF;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #D4AF37; /* Gold border on focus */
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+.input-group .btn {
+    border-radius: 0 12px 12px 0;
+}
+
+/* Hero Section Styles */
+.hero {
+    text-align: center;
+    padding: 80px 24px;
+    background: linear-gradient(135deg, #FFFFFF 0%, #F9F5EC 100%);
+    border-radius: 12px;
+    margin-bottom: 40px;
+}
+
+.hero h1 {
+    font-size: 48px;
+    font-weight: 700;
+    color: #2B2B2B;
+    margin-bottom: 16px;
+}
+
+.hero p {
+    font-size: 20px;
+    color: #666666;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Breadcrumb Styles */
+.breadcrumb {
+    list-style: none;
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    background: #F9F5EC;
+    padding: 12px 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.breadcrumb li {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb li:not(:last-child)::after {
+    content: '/';
+    margin-left: 8px;
+    color: #666666;
+}
+
+.breadcrumb a {
+    color: #D4AF37;
+    font-weight: 500;
+}
+
+/* Cart Styles */
+.cart-container {
+    background: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.cart-header {
+    background: #F9F5EC;
+    padding: 24px;
+    border-bottom: 1px solid #D4AF37;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid #F9F5EC;
+    transition: background-color 0.3s ease;
+}
+
+.cart-item:hover {
+    background-color: #F9F5EC;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 16px;
+}
+
+.item-details {
+    flex: 1;
+}
+
+.item-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #2B2B2B;
+    margin-bottom: 4px;
+}
+
+.item-meta {
+    color: #666666;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.quantity-controls button {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #D4AF37;
+    background: #FFFFFF;
+    color: #D4AF37;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.quantity-controls button:hover {
+    background: #D4AF37;
+    color: #FFFFFF;
+}
+
+.quantity-controls input {
+    width: 60px;
+    height: 32px;
+    text-align: center;
+    border: 1px solid #D4AF37;
+    border-left: none;
+    border-right: none;
+    font-weight: 600;
+}
+
+.item-price {
+    font-size: 16px;
+    font-weight: 600;
+    color: #7A5C3E;
+    margin-right: 16px;
+}
+
+.item-subtotal {
+    font-size: 18px;
+    font-weight: 700;
+    color: #D4AF37;
+}
+
+.cart-footer {
+    background: #F9F5EC;
+    padding: 24px;
+    border-top: 1px solid #D4AF37;
+}
+
+.cart-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.total-label {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2B2B2B;
+}
+
+.total-amount {
+    font-size: 24px;
+    font-weight: 700;
+    color: #D4AF37;
+}
+
+.cart-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Alert Styles */
+.alert {
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid;
+}
+
+.alert-success {
+    background: #F9F5EC;
+    color: #7A5C3E;
+    border-color: #D4AF37;
+}
+
+.alert-danger {
+    background: #F9F5EC;
+    color: #7A5C3E;
+    border-color: #D4AF37;
+}
+
+.alert-info {
+    background: #F9F5EC;
+    color: #666666;
+    border-color: #D4AF37;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Responsive Design - Mobile First */
+@media (max-width: 767px) {
+    .container {
+        padding: 16px;
+    }
+
+    .menu-tray {
+        position: static;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .menu-tray a {
+        margin: 0 8px;
+    }
+
+    .hero h1 {
+        font-size: 32px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .card {
+        margin-bottom: 20px;
+    }
+
+    .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: center;
+    }
+
+    .item-image {
+        margin-bottom: 12px;
+        margin-right: 0;
+    }
+
+    .cart-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .cart-actions > div {
+        width: 100%;
+    }
+
+    .cart-actions .btn {
+        width: 100%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    /* Two-column grid on tablets */
+    .row .col-md-4 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+
+    .product-container {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (min-width: 992px) {
+    /* Single column on larger screens, but allow grid for products */
+    .product-container {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+}

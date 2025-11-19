@@ -8,53 +8,7 @@ require_once 'settings/core.php';
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Home</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-.menu-tray {
-position: fixed;
-top: 16px;
-right: 16px;
-background: rgba(255,255,255,0.95);
-border: 1px solid #e6e6e6;
-border-radius: 8px;
-padding: 6px 10px;
-box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-z-index: 1000;
-}
-.menu-tray a { margin-left: 8px; }
-.cart-badge {
-position: relative;
-display: inline-block;
-}
-.cart-badge .badge {
-position: absolute;
-top: -8px;
-right: -8px;
-background: #dc3545;
-color: white;
-border-radius: 50%;
-padding: 2px 6px;
-font-size: 10px;
-}
-.quantity-controls {
-display: none;
-align-items: center;
-gap: 10px;
-}
-.quantity-controls.active {
-display: flex;
-}
-.quantity-controls button {
-width: 32px;
-height: 32px;
-padding: 0;
-font-weight: bold;
-}
-.quantity-controls .qty-display {
-min-width: 40px;
-text-align: center;
-font-weight: bold;
-}
-</style>
+<link href="css/styles.css" rel="stylesheet">
 </head>
 <body>
 
