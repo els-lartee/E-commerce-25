@@ -8,111 +8,102 @@
 </head>
 <body>
     <div class="container">
-        <ul class="breadcrumb">
-            <li><a href="../index.php">Home</a></li>
-            <li>Product Details</li>
-        </ul>
-
-        <div class="cart-info" style="text-align: right; margin-bottom: 20px;">
-            <a href="../view/cart.php" class="btn btn-secondary">View Cart (<span id="cart-count">0</span>)</a>
-        </div>
-
-        <div id="productDetails">
+        <div id="productDetail">
             <p style="text-align: center;">Loading product details...</p>
         </div>
     </div>
 
-    <script src="../js/cart.js" defer></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../js/cart.js" defer></script>
     <script>
         $(document).ready(function() {
             const urlParams = new URLSearchParams(window.location.search);
             const productId = urlParams.get('id');
 
             if (!productId) {
-                $('#productDetails').html(`
-                    <div class="alert alert-danger">
-                        <h4>Error</h4>
-                        <p>No product ID specified.</p>
-                        <a href="../index.php" class="btn btn-primary">View All Products</a>
-                    </div>
-                `);
+                $('#productDetail').html('<div class="alert alert-danger">Product ID not provided</div>');
                 return;
             }
 
-            loadProduct(productId);
+            loadProductDetail(productId);
         });
 
-        function loadProduct(productId) {
-            $.getJSON(`../actions/view_single_product_action.php?id=${productId}`, function(resp) {
-                if (resp.status !== 'success' || !resp.product) {
-                    $('#productDetails').html(`
-                        <div class="alert alert-danger">
-                            <h4>Product Not Found</h4>
-                            <p>The product you are looking for does not exist.</p>
-                            <a href="../index.php">View All Products</a>
-                        </div>
-                    `);
+        function loadProductDetail(productId) {
+            $.getJSON(`../actions/fetch_product_action.php?id=${productId}`, function(resp) {
+                if (resp.status !== 'success') {
+                    $('#productDetail').html('<div class="alert alert-danger">Failed to load product details</div>');
                     return;
                 }
 
-                const p = resp.product;
-                document.title = p.product_title + ' - Product Details';
-
-                const imageUrl = p.product_image ? `../${p.product_image}` : '';
-                const imageHtml = imageUrl 
-                    ? `<img src="${imageUrl}" class="product-image" alt="${p.product_title}">`
-                    : `<div class="product-image-placeholder"><span>No Image Available</span></div>`;
-
-                const html = `
-                    <div class="product-container" data-product-card="${p.product_id}">
-                        <div>
-                            ${imageHtml}
-                        </div>
-                        <div class="product-details">
-                            <h1>${p.product_title}</h1>
-                            <div class="price-tag">$${parseFloat(p.product_price).toFixed(2)}</div>
-                            
-                            <div class="product-meta">
-                                <p><strong>Category:</strong> ${p.cat_name || 'N/A'}</p>
-                                <p><strong>Brand:</strong> ${p.brand_name || 'N/A'}</p>
-                            </div>
-
-                            <div class="product-description">
-                                <h4>Description</h4>
-                                <p>${p.product_desc || 'No description available.'}</p>
-                            </div>
-
-                            ${p.product_keywords ? `
-                                <div class="product-keywords">
-                                    <h5>Keywords</h5>
-                                    <p>${p.product_keywords}</p>
-                                </div>
-                            ` : ''}
-
-                            <div style="margin-top: 30px;">
-                                <div class="product-actions">
-                                    <button class="btn btn-success btn-add-to-cart" data-product-id="${p.product_id}">
-                                        Add to Cart
-                                    </button>
-                                </div>
-                                <a href="../index.php" class="btn btn-secondary" style="margin-top: 10px; display: inline-block;">
-                                    Back to Products
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                $('#productDetails').html(html);
+                const product = resp.product;
+                displayProductDetail(product);
             }).fail(function() {
-                $('#productDetails').html(`
-                    <div class="alert alert-danger">
-                        <h4>Error</h4>
-                        <p>Failed to load product details. Please try again later.</p>
-                        <a href="../index.php">View All Products</a>
+                $('#productDetail').html('<div class="alert alert-danger">Error loading product details</div>');
+            });
+        }
+
+        function displayProductDetail(product) {
+            const imageUrl = product.product_image ? `../${product.product_image}` : '';
+            const imageHtml = imageUrl
+                ? `<img src="${imageUrl}" class="product-image" alt="${product.product_title}">`
+                : `<div class="product-image-placeholder"><span>No Image</span></div>`;
+
+            const html = `
+                <div class="product-detail">
+                    <div class="product-image-container">
+                        ${imageHtml}
                     </div>
-                `);
+                    <div class="product-info">
+                        <h1>${product.product_title}</h1>
+                        <div class="product-price">$${parseFloat(product.product_price).toFixed(2)}</div>
+                        <div class="product-meta">
+                            Category: ${product.cat_name || 'N/A'}<br>
+                            Brand: ${product.brand_name || 'N/A'}
+                        </div>
+                        <div class="product-description">
+                            ${product.product_desc || 'No description available.'}
+                        </div>
+                        <div class="quantity-section">
+                            <div class="quantity-controls">
+                                <button class="qty-btn" data-action="decrease">-</button>
+                                <input type="number" class="qty-input" value="1" min="1" max="99">
+                                <button class="qty-btn" data-action="increase">+</button>
+                            </div>
+                            <button class="btn btn-success add-to-cart-btn" data-product-id="${product.product_id}">Add to Cart</button>
+                        </div>
+                        <div class="product-actions">
+                            <a href="../view/all_product.php" class="btn btn-secondary">Back to Products</a>
+                            <a href="../view/cart.php" class="btn btn-primary">View Cart</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            $('#productDetail').html(html);
+
+            // Quantity controls
+            $('.qty-btn').on('click', function() {
+                const action = $(this).data('action');
+                const input = $(this).siblings('.qty-input');
+                let value = parseInt(input.val());
+
+                if (action === 'increase' && value < 99) {
+                    value++;
+                } else if (action === 'decrease' && value > 1) {
+                    value--;
+                }
+
+                input.val(value);
+            });
+
+            $('.qty-input').on('change', function() {
+                let value = parseInt($(this).val());
+                if (isNaN(value) || value < 1) {
+                    value = 1;
+                } else if (value > 99) {
+                    value = 99;
+                }
+                $(this).val(value);
             });
         }
     </script>
