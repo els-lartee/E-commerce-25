@@ -1,3 +1,6 @@
+<?php 
+require_once '../settings/core.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -106,7 +109,30 @@
                 }
                 $(this).val(value);
             });
+
+            // Store product info for chatbot context
+            window.currentProduct = product;
+            
+            // Initialize chatbot with product context
+            if (window.chatbot) {
+                window.chatbot.setContext('product', {
+                    id: product.product_id,
+                    name: product.product_title,
+                    price: product.product_price,
+                    category: product.cat_name,
+                    brand: product.brand_name,
+                    description: product.product_desc
+                });
+            }
         }
     </script>
+
+    <?php 
+    // Include AI Chatbot for logged-in customers
+    if (isset($_SESSION['user_id']) && !is_admin()): 
+        $chat_context = 'product';
+        include '../components/chat_widget.php';
+    endif; 
+    ?>
 </body>
 </html>

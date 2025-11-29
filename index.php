@@ -84,6 +84,15 @@ Cart
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="js/cart.js" defer></script>
+
+<?php 
+// Include AI Chatbot for logged-in customers
+if (isset($_SESSION['user_id']) && !is_admin()): 
+    $chat_context = 'home';
+    include 'components/chat_widget.php';
+endif; 
+?>
+
 <script>
 let allProducts = [];
 let filteredProducts = [];

@@ -1,3 +1,6 @@
+<?php 
+require_once '../settings/core.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -214,5 +217,13 @@
             });
         }
     </script>
+
+    <?php 
+    // Include AI Chatbot for logged-in customers
+    if (isset($_SESSION['user_id']) && !is_admin()): 
+        $chat_context = 'cart';
+        include '../components/chat_widget.php';
+    endif; 
+    ?>
 </body>
 </html>
