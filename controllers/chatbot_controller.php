@@ -12,9 +12,10 @@ require_once __DIR__ . '/../settings/core.php';
  * 
  * @param string $message User's message
  * @param array $history Conversation history
+ * @param array $context Additional context (page, product info)
  * @return array Response with status and message
  */
-function chat_send_message_ctr($message, $history = []) {
+function chat_send_message_ctr($message, $history = [], $context = []) {
     try {
         if (empty(trim($message))) {
             return [
@@ -24,7 +25,7 @@ function chat_send_message_ctr($message, $history = []) {
         }
         
         $chatbot = new GeminiChatbot();
-        $response = $chatbot->chat($message, $history);
+        $response = $chatbot->chat($message, $history, $context);
         
         return $response;
         
@@ -93,22 +94,45 @@ function chat_get_welcome_ctr() {
  */
 function chat_product_query_ctr($message, $product_info = [], $history = []) {
     try {
-        // Add product context to the message if available
-        if (!empty($product_info)) {
-            $context = "\n[Context: Customer is viewing: " . 
-                       ($product_info['title'] ?? 'a product') . 
-                       ", Price: GHS " . ($product_info['price'] ?? 'N/A') . 
-                       ", Category: " . ($product_info['category'] ?? 'N/A') . "]";
-            $message = $message . $context;
-        }
+        // Build context with product information
+        $context = [
+            'page' => 'product',
+            'product' => $product_info
+        ];
         
-        return chat_send_message_ctr($message, $history);
+        return chat_send_message_ctr($message, $history, $context);
         
     } catch (Exception $e) {
         error_log("Error in chat_product_query_ctr: " . $e->getMessage());
         return [
             'status' => 'error',
             'message' => 'Sorry, something went wrong. Please try again.'
+        ];
+    }
+}
+
+/**
+ * Search products through chatbot
+ * 
+ * @param string $query Search query
+ * @return array Products matching query
+ */
+function chat_search_products_ctr($query) {
+    try {
+        $chatbot = new GeminiChatbot();
+        $products = $chatbot->searchProducts($query);
+        
+        return [
+            'status' => 'success',
+            'products' => $products,
+            'count' => count($products)
+        ];
+    } catch (Exception $e) {
+        error_log("Error in chat_search_products_ctr: " . $e->getMessage());
+        return [
+            'status' => 'error',
+            'products' => [],
+            'count' => 0
         ];
     }
 }
@@ -124,20 +148,18 @@ function chat_product_query_ctr($message, $product_info = [], $history = []) {
  */
 function chat_order_query_ctr($message, $customer_id = null, $history = []) {
     try {
+        $context = [
+            'page' => 'order',
+            'customer_id' => $customer_id,
+            'logged_in' => ($customer_id !== null)
+        ];
+        
         // Check if message contains order reference
         if (preg_match('/ORD-\d+-\d+/', $message, $matches)) {
-            // Add order lookup context
-            $message .= "\n[Note: Customer mentioned order reference. Direct them to check order history or contact support for specific order status.]";
+            $context['order_reference'] = $matches[0];
         }
         
-        // Add customer context if logged in
-        if ($customer_id) {
-            $message .= "\n[Context: Customer is logged in.]";
-        } else {
-            $message .= "\n[Context: Customer is not logged in. They need to log in to see order history.]";
-        }
-        
-        return chat_send_message_ctr($message, $history);
+        return chat_send_message_ctr($message, $history, $context);
         
     } catch (Exception $e) {
         error_log("Error in chat_order_query_ctr: " . $e->getMessage());

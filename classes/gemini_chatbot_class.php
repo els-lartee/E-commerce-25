@@ -2,11 +2,13 @@
 /**
  * Gemini AI Chatbot Class
  * Handles communication with Google's Gemini API
+ * Enhanced with real product knowledge from database
  */
 
 require_once __DIR__ . '/../settings/gemini_config.php';
+require_once __DIR__ . '/../settings/db_class.php';
 
-class GeminiChatbot {
+class GeminiChatbot extends db_connection {
     
     private $api_key;
     private $model;
@@ -16,6 +18,7 @@ class GeminiChatbot {
     private $system_prompt;
     
     public function __construct() {
+        parent::db_connect();
         $this->api_key = GEMINI_API_KEY;
         $this->model = GEMINI_MODEL;
         $this->api_url = GEMINI_API_URL;
@@ -25,13 +28,234 @@ class GeminiChatbot {
     }
     
     /**
+     * Get store knowledge from database
+     * This provides real-time product, category, and brand information
+     * 
+     * @return string Formatted knowledge string
+     */
+    private function getStoreKnowledge() {
+        $conn = $this->db_conn();
+        if (!$conn) {
+            return "";
+        }
+        
+        $knowledge = "\n\n--- CURRENT STORE INVENTORY ---\n";
+        
+        // Get categories
+        $categories = [];
+        $cat_result = mysqli_query($conn, "SELECT id, name FROM jewellery ORDER BY name");
+        if ($cat_result) {
+            while ($row = mysqli_fetch_assoc($cat_result)) {
+                $categories[$row['id']] = $row['name'];
+            }
+            mysqli_free_result($cat_result);
+        }
+        
+        if (!empty($categories)) {
+            $knowledge .= "\n**Available Categories:** " . implode(", ", $categories) . "\n";
+        }
+        
+        // Get brands
+        $brands = [];
+        $brand_result = mysqli_query($conn, "SELECT brand_id, brand_name FROM brands ORDER BY brand_name");
+        if ($brand_result) {
+            while ($row = mysqli_fetch_assoc($brand_result)) {
+                $brands[$row['brand_id']] = $row['brand_name'];
+            }
+            mysqli_free_result($brand_result);
+        }
+        
+        if (!empty($brands)) {
+            $knowledge .= "**Available Brands:** " . implode(", ", $brands) . "\n";
+        }
+        
+        // Get products with details
+        $products_result = mysqli_query($conn, 
+            "SELECT p.product_id, p.product_title, p.product_price, p.product_desc, 
+                    j.name as category, b.brand_name 
+             FROM product p 
+             LEFT JOIN jewellery j ON p.product_cat = j.id 
+             LEFT JOIN brands b ON p.product_brand = b.brand_id 
+             ORDER BY p.product_id DESC 
+             LIMIT 50"
+        );
+        
+        if ($products_result && mysqli_num_rows($products_result) > 0) {
+            $knowledge .= "\n**Current Products:**\n";
+            while ($product = mysqli_fetch_assoc($products_result)) {
+                $knowledge .= "- {$product['product_title']} (GHS " . number_format($product['product_price'], 2) . ")";
+                if ($product['category']) {
+                    $knowledge .= " | Category: {$product['category']}";
+                }
+                if ($product['brand_name']) {
+                    $knowledge .= " | Brand: {$product['brand_name']}";
+                }
+                if ($product['product_desc']) {
+                    $desc = substr($product['product_desc'], 0, 100);
+                    $knowledge .= " | {$desc}";
+                    if (strlen($product['product_desc']) > 100) {
+                        $knowledge .= "...";
+                    }
+                }
+                $knowledge .= "\n";
+            }
+            mysqli_free_result($products_result);
+        }
+        
+        // Get price range
+        $price_result = mysqli_query($conn, 
+            "SELECT MIN(product_price) as min_price, MAX(product_price) as max_price, 
+                    AVG(product_price) as avg_price, COUNT(*) as total 
+             FROM product"
+        );
+        
+        if ($price_result) {
+            $stats = mysqli_fetch_assoc($price_result);
+            if ($stats['total'] > 0) {
+                $knowledge .= "\n**Price Range:** GHS " . number_format($stats['min_price'], 2) . 
+                              " - GHS " . number_format($stats['max_price'], 2) . 
+                              " (Average: GHS " . number_format($stats['avg_price'], 2) . ")\n";
+                $knowledge .= "**Total Products Available:** {$stats['total']}\n";
+            }
+            mysqli_free_result($price_result);
+        }
+        
+        $knowledge .= "--- END INVENTORY ---\n";
+        
+        return $knowledge;
+    }
+    
+    /**
+     * Search products based on user query
+     * 
+     * @param string $query Search terms
+     * @return array Matching products
+     */
+    public function searchProducts($query) {
+        $conn = $this->db_conn();
+        if (!$conn) return [];
+        
+        $search_term = "%" . mysqli_real_escape_string($conn, $query) . "%";
+        
+        $stmt = mysqli_prepare($conn, 
+            "SELECT p.product_id, p.product_title, p.product_price, p.product_desc, 
+                    j.name as category, b.brand_name 
+             FROM product p 
+             LEFT JOIN jewellery j ON p.product_cat = j.id 
+             LEFT JOIN brands b ON p.product_brand = b.brand_id 
+             WHERE p.product_title LIKE ? 
+                OR p.product_desc LIKE ? 
+                OR p.product_keywords LIKE ?
+                OR b.brand_name LIKE ?
+                OR j.name LIKE ?
+             ORDER BY p.product_id DESC
+             LIMIT 10"
+        );
+        
+        mysqli_stmt_bind_param($stmt, "sssss", $search_term, $search_term, $search_term, $search_term, $search_term);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        mysqli_stmt_close($stmt);
+        
+        return $products;
+    }
+    
+    /**
+     * Get products by category
+     * 
+     * @param string $category Category name
+     * @return array Products in category
+     */
+    public function getProductsByCategory($category) {
+        $conn = $this->db_conn();
+        if (!$conn) return [];
+        
+        $search_term = "%" . mysqli_real_escape_string($conn, $category) . "%";
+        
+        $stmt = mysqli_prepare($conn, 
+            "SELECT p.product_id, p.product_title, p.product_price, p.product_desc, 
+                    j.name as category, b.brand_name 
+             FROM product p 
+             LEFT JOIN jewellery j ON p.product_cat = j.id 
+             LEFT JOIN brands b ON p.product_brand = b.brand_id 
+             WHERE j.name LIKE ?
+             ORDER BY p.product_price ASC
+             LIMIT 10"
+        );
+        
+        mysqli_stmt_bind_param($stmt, "s", $search_term);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        mysqli_stmt_close($stmt);
+        
+        return $products;
+    }
+    
+    /**
+     * Get products within a price range
+     * 
+     * @param float $min_price Minimum price
+     * @param float $max_price Maximum price
+     * @return array Products in range
+     */
+    public function getProductsByPriceRange($min_price, $max_price) {
+        $conn = $this->db_conn();
+        if (!$conn) return [];
+        
+        $stmt = mysqli_prepare($conn, 
+            "SELECT p.product_id, p.product_title, p.product_price, p.product_desc, 
+                    j.name as category, b.brand_name 
+             FROM product p 
+             LEFT JOIN jewellery j ON p.product_cat = j.id 
+             LEFT JOIN brands b ON p.product_brand = b.brand_id 
+             WHERE p.product_price BETWEEN ? AND ?
+             ORDER BY p.product_price ASC
+             LIMIT 10"
+        );
+        
+        mysqli_stmt_bind_param($stmt, "dd", $min_price, $max_price);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $products = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        mysqli_stmt_close($stmt);
+        
+        return $products;
+    }
+    
+    /**
+     * Format product list for chat response
+     * 
+     * @param array $products Products to format
+     * @return string Formatted product list
+     */
+    private function formatProductsForChat($products) {
+        if (empty($products)) {
+            return "";
+        }
+        
+        $formatted = "\n\nHere are some products I found:\n";
+        foreach ($products as $product) {
+            $formatted .= "• {$product['product_title']} - GHS " . number_format($product['product_price'], 2);
+            if ($product['category']) {
+                $formatted .= " ({$product['category']})";
+            }
+            $formatted .= "\n";
+        }
+        
+        return $formatted;
+    }
+    
+    /**
      * Send a message to Gemini and get a response
      * 
      * @param string $user_message The user's message
      * @param array $conversation_history Previous messages for context
+     * @param array $context Additional context (product info, page context)
      * @return array Response with status and message
      */
-    public function chat($user_message, $conversation_history = []) {
+    public function chat($user_message, $conversation_history = [], $context = []) {
         try {
             if (empty($user_message)) {
                 return [
@@ -40,8 +264,32 @@ class GeminiChatbot {
                 ];
             }
             
+            // Get real-time store knowledge
+            $store_knowledge = $this->getStoreKnowledge();
+            
+            // Check if user is asking about specific products
+            $product_context = "";
+            if ($this->isProductQuery($user_message)) {
+                $search_results = $this->searchProducts($user_message);
+                if (!empty($search_results)) {
+                    $product_context = $this->formatProductsForChat($search_results);
+                }
+            }
+            
+            // Add current product context if viewing a product
+            if (!empty($context['product'])) {
+                $product_context .= "\n\n**Customer is currently viewing:**\n";
+                $product_context .= "Product: " . ($context['product']['name'] ?? 'Unknown') . "\n";
+                $product_context .= "Price: GHS " . number_format($context['product']['price'] ?? 0, 2) . "\n";
+                $product_context .= "Category: " . ($context['product']['category'] ?? 'N/A') . "\n";
+                $product_context .= "Brand: " . ($context['product']['brand'] ?? 'N/A') . "\n";
+                if (!empty($context['product']['description'])) {
+                    $product_context .= "Description: " . $context['product']['description'] . "\n";
+                }
+            }
+            
             // Build the contents array for the API
-            $contents = $this->buildContents($user_message, $conversation_history);
+            $contents = $this->buildContents($user_message, $conversation_history, $store_knowledge, $product_context);
             
             // Make API request
             $response = $this->makeRequest($contents);
@@ -58,25 +306,67 @@ class GeminiChatbot {
     }
     
     /**
+     * Check if user message is asking about products
+     * 
+     * @param string $message User message
+     * @return bool
+     */
+    private function isProductQuery($message) {
+        $product_keywords = [
+            'product', 'products', 'ring', 'rings', 'necklace', 'necklaces', 
+            'bracelet', 'bracelets', 'earring', 'earrings', 'pendant', 'pendants',
+            'gold', 'silver', 'diamond', 'price', 'cost', 'how much', 'show me',
+            'find', 'search', 'looking for', 'buy', 'purchase', 'available',
+            'cheapest', 'expensive', 'affordable', 'budget', 'under', 'below',
+            'jewellery', 'jewelry', 'chain', 'chains', 'watch', 'watches',
+            'gift', 'recommend', 'suggestion', 'what do you have', 'what\'s available'
+        ];
+        
+        $message_lower = strtolower($message);
+        foreach ($product_keywords as $keyword) {
+            if (strpos($message_lower, $keyword) !== false) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
      * Build the contents array for Gemini API
      * 
      * @param string $user_message Current message
      * @param array $conversation_history Previous messages
+     * @param string $store_knowledge Current inventory data
+     * @param string $product_context Relevant product context
      * @return array Contents for API
      */
-    private function buildContents($user_message, $conversation_history = []) {
+    private function buildContents($user_message, $conversation_history = [], $store_knowledge = "", $product_context = "") {
         $contents = [];
+        
+        // Build enhanced system prompt with store knowledge
+        $enhanced_prompt = $this->system_prompt;
+        
+        if (!empty($store_knowledge)) {
+            $enhanced_prompt .= "\n\n" . $store_knowledge;
+        }
+        
+        if (!empty($product_context)) {
+            $enhanced_prompt .= "\n\n**RELEVANT CONTEXT:**" . $product_context;
+        }
+        
+        $enhanced_prompt .= "\n\n**IMPORTANT:** When mentioning products, always include the actual price in GHS from the inventory data. Be specific about what products are available.";
         
         // Add system prompt as first user message (Gemini doesn't have system role)
         $contents[] = [
             'role' => 'user',
-            'parts' => [['text' => $this->system_prompt . "\n\nPlease acknowledge that you understand your role."]]
+            'parts' => [['text' => $enhanced_prompt . "\n\nPlease acknowledge that you understand your role and the current inventory."]]
         ];
         
         // Add model acknowledgment
         $contents[] = [
             'role' => 'model',
-            'parts' => [['text' => "I understand! I'm the friendly AI assistant for Elegant Jewels, your online jewellery store in Ghana. I'm here to help with product information, shopping assistance, order support, style advice, and store policies. How can I help you today?"]]
+            'parts' => [['text' => "I understand! I'm the AI assistant for Elegant Jewels in Ghana. I have access to the current inventory and can help customers with accurate product information, prices in GHS, and shopping assistance. How can I help you today?"]]
         ];
         
         // Add conversation history
@@ -208,23 +498,24 @@ class GeminiChatbot {
     
     /**
      * Get quick reply suggestions based on context
+     * Enhanced to include dynamic category/product suggestions
      * 
      * @param string $context Current context (home, product, cart, etc.)
      * @return array Quick reply options
      */
     public function getQuickReplies($context = 'home') {
-        $replies = [
+        $base_replies = [
             'home' => [
-                'What jewellery do you sell?',
-                'How do I place an order?',
+                'What jewellery do you have?',
+                'Show me your best sellers',
                 'What payment methods do you accept?',
                 'Help me find a gift'
             ],
             'product' => [
                 'Tell me about this product',
-                'What sizes are available?',
                 'Is this suitable for a gift?',
-                'Do you have similar items?'
+                'Do you have similar items?',
+                'What\'s your return policy?'
             ],
             'cart' => [
                 'How do I checkout?',
@@ -246,21 +537,64 @@ class GeminiChatbot {
             ]
         ];
         
-        return $replies[$context] ?? $replies['home'];
+        $replies = $base_replies[$context] ?? $base_replies['home'];
+        
+        // For home context, add dynamic category suggestions
+        if ($context === 'home') {
+            $conn = $this->db_conn();
+            if ($conn) {
+                // Get top categories with products
+                $result = mysqli_query($conn, 
+                    "SELECT j.name, COUNT(p.product_id) as product_count 
+                     FROM jewellery j 
+                     LEFT JOIN product p ON j.id = p.product_cat 
+                     GROUP BY j.id 
+                     HAVING product_count > 0 
+                     ORDER BY product_count DESC 
+                     LIMIT 2"
+                );
+                
+                if ($result && mysqli_num_rows($result) > 0) {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $replies[] = "Show me {$row['name']}";
+                    }
+                    mysqli_free_result($result);
+                }
+            }
+        }
+        
+        return array_slice($replies, 0, 5); // Return max 5 options
     }
     
     /**
-     * Get welcome message
+     * Get welcome message with store summary
      * 
      * @return string Welcome message
      */
     public function getWelcomeMessage() {
-        return "Hello! 👋 Welcome to Elegant Jewels! I'm your AI assistant. I can help you with:\n\n" .
-               "💎 Finding the perfect jewellery\n" .
-               "🛒 Shopping and ordering help\n" .
-               "💳 Payment questions (MoMo, Cards)\n" .
-               "🎁 Gift suggestions\n\n" .
-               "How can I assist you today?";
+        $welcome = "Hello! Welcome to Elegant Jewels! I'm your AI assistant.\n\n";
+        
+        // Get quick store stats
+        $conn = $this->db_conn();
+        if ($conn) {
+            $stats = mysqli_query($conn, "SELECT COUNT(*) as total FROM product");
+            if ($stats) {
+                $row = mysqli_fetch_assoc($stats);
+                if ($row['total'] > 0) {
+                    $welcome .= "We currently have {$row['total']} beautiful pieces for you to explore! ";
+                }
+                mysqli_free_result($stats);
+            }
+        }
+        
+        $welcome .= "I can help you with:\n\n" .
+                    "Finding the perfect jewellery\n" .
+                    "Shopping and ordering help\n" .
+                    "Payment questions (MoMo, Cards)\n" .
+                    "Gift suggestions\n\n" .
+                    "How can I assist you today?";
+        
+        return $welcome;
     }
 }
 
