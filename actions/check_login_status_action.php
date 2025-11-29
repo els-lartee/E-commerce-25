@@ -6,5 +6,8 @@ header('Content-Type: application/json');
 echo json_encode([
     'status' => 'success',
     'logged_in' => is_logged_in(),
-    'user_id' => get_user_id()
+    'user_id' => get_user_id(),
+    'user_name' => $_SESSION['user_name'] ?? '',
+    'email' => $_SESSION['user_email'] ?? '',
+    'is_admin' => is_admin()
 ]);

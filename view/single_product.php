@@ -29,15 +29,16 @@
         });
 
         function loadProductDetail(productId) {
-            $.getJSON(`../actions/fetch_product_action.php?id=${productId}`, function(resp) {
-                if (resp.status !== 'success') {
-                    $('#productDetail').html('<div class="alert alert-danger">Failed to load product details</div>');
+            $.getJSON(`../actions/view_single_product_action.php?id=${productId}`, function(resp) {
+                if (resp.status !== 'success' || !resp.product) {
+                    $('#productDetail').html('<div class="alert alert-danger">' + (resp.message || 'Failed to load product details') + '</div>');
                     return;
                 }
 
                 const product = resp.product;
                 displayProductDetail(product);
-            }).fail(function() {
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                console.error('Error loading product:', textStatus, errorThrown);
                 $('#productDetail').html('<div class="alert alert-danger">Error loading product details</div>');
             });
         }

@@ -20,7 +20,6 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../js/cart.js"></script>
-    <script src="../js/checkout.js"></script>
     <script>
         $(document).ready(function() {
             loadCart();
@@ -103,7 +102,7 @@
                     <div class="cart-actions">
                         <button class="btn btn-danger" id="emptyCartBtn">Empty Cart</button>
                         <div>
-                            <button class="btn btn-success proceed-to-checkout-btn">Proceed to Checkout</button>
+                            <a href="checkout.php" class="btn btn-success">Proceed to Checkout</a>
                         </div>
                     </div>
                 </div>
