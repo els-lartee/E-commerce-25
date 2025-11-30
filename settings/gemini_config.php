@@ -11,7 +11,8 @@
  */
 
 // Your Gemini API Key (get from Google AI Studio)
-define('GEMINI_API_KEY', 'AIzaSyAC6hhNYcrkfLYqTSZLRfErLtew0MFBKDk');
+define('GEMINI_API_KEY', 'AIzaSyAbFqA05UmzkHC4Qkipi3kSUtdEzEaFCEM');
+
 
 define('GEMINI_MODEL', 'gemini-2.5-flash-lite');
 
