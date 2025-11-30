@@ -10,10 +10,7 @@
  * - 1,500 requests per day
  */
 
-// Your Gemini API Key (get from Google AI Studio)
-define('GEMINI_API_KEY', 'AIzaSyAC6hhNYcrkfLYqTSZLRfErLtew0MFBKDk');
 
-define('GEMINI_MODEL', 'gemini-2.5-flash-lite');
 
 // API Base URL
 define('GEMINI_API_URL', 'https://generativelanguage.googleapis.com/v1beta/models/');
