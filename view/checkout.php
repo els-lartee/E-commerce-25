@@ -14,10 +14,16 @@ $currency = PAYSTACK_CURRENCY;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Jewellery Store</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Checkout - Golden Aura Jewellery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="../css/styles.css" rel="stylesheet">
     <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #FFFFFF 0%, #F9F5EC 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
         .checkout-wrapper {
             max-width: 800px;
             margin: 40px auto;
@@ -26,36 +32,40 @@ $currency = PAYSTACK_CURRENCY;
         .checkout-card {
             background: #fff;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
             overflow: hidden;
+            border: 1px solid #F9F5EC;
         }
         .checkout-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #D4AF37 0%, #7A5C3E 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
         .checkout-header h2 {
+            font-family: 'Playfair Display', serif;
             margin: 0;
             font-size: 28px;
         }
         .checkout-header p {
             margin: 10px 0 0;
             opacity: 0.9;
+            font-weight: 300;
         }
         .checkout-body {
             padding: 30px;
         }
         .order-summary {
-            background: #f8f9fa;
-            border-radius: 8px;
+            background: #F9F5EC;
+            border-radius: 12px;
             padding: 20px;
             margin-bottom: 25px;
         }
         .order-summary h4 {
+            font-family: 'Playfair Display', serif;
             margin-bottom: 20px;
-            color: #333;
-            border-bottom: 2px solid #667eea;
+            color: #2B2B2B;
+            border-bottom: 2px solid #D4AF37;
             padding-bottom: 10px;
         }
         .order-item {
@@ -63,36 +73,39 @@ $currency = PAYSTACK_CURRENCY;
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
         }
         .order-item:last-child {
             border-bottom: none;
         }
         .order-item .item-name {
             flex: 1;
+            color: #2B2B2B;
         }
         .order-item .item-qty {
-            color: #666;
+            color: #666666;
             margin: 0 15px;
         }
         .order-item .item-price {
             font-weight: 600;
             min-width: 80px;
             text-align: right;
+            color: #7A5C3E;
         }
         .order-totals {
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 2px dashed #ddd;
+            border-top: 2px dashed rgba(212, 175, 55, 0.3);
         }
         .order-totals .row {
             margin-bottom: 10px;
+            color: #666666;
         }
         .order-totals .total-row {
             font-size: 20px;
             font-weight: 700;
-            color: #667eea;
-            border-top: 2px solid #667eea;
+            color: #D4AF37;
+            border-top: 2px solid #D4AF37;
             padding-top: 15px;
             margin-top: 15px;
         }
@@ -100,26 +113,28 @@ $currency = PAYSTACK_CURRENCY;
             margin-bottom: 25px;
         }
         .payment-methods h4 {
+            font-family: 'Playfair Display', serif;
             margin-bottom: 15px;
-            color: #333;
+            color: #2B2B2B;
         }
         .payment-option {
             display: flex;
             align-items: center;
             padding: 15px;
-            border: 2px solid #eee;
-            border-radius: 8px;
+            border: 2px solid #F9F5EC;
+            border-radius: 12px;
             margin-bottom: 10px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            background: white;
         }
         .payment-option:hover {
-            border-color: #667eea;
-            background: #f8f9fa;
+            border-color: #D4AF37;
+            background: #F9F5EC;
         }
         .payment-option.selected {
-            border-color: #667eea;
-            background: #f0f3ff;
+            border-color: #D4AF37;
+            background: #F9F5EC;
         }
         .payment-option img {
             height: 30px;
@@ -127,10 +142,11 @@ $currency = PAYSTACK_CURRENCY;
         }
         .payment-option .payment-name {
             font-weight: 600;
+            color: #2B2B2B;
         }
         .payment-option .payment-desc {
             font-size: 13px;
-            color: #666;
+            color: #666666;
         }
         .checkout-actions {
             display: flex;
@@ -142,16 +158,18 @@ $currency = PAYSTACK_CURRENCY;
             padding: 15px 30px;
             font-size: 18px;
             font-weight: 600;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Poppins', sans-serif;
+            background: #D4AF37;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             color: white;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
         }
         .btn-pay:hover {
+            background: #B8941F;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
         }
         .btn-pay:disabled {
             opacity: 0.6;
@@ -160,26 +178,27 @@ $currency = PAYSTACK_CURRENCY;
         }
         .btn-back {
             padding: 15px 25px;
-            background: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 8px;
+            background: #F9F5EC;
+            color: #7A5C3E;
+            border: 1px solid #D4AF37;
+            border-radius: 12px;
             cursor: pointer;
             text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
         .btn-back:hover {
-            background: #5a6268;
+            background: #D4AF37;
             color: white;
         }
         .secure-badge {
             text-align: center;
             margin-top: 20px;
-            color: #666;
+            color: #666666;
             font-size: 14px;
         }
-        .secure-badge i {
-            color: #28a745;
-            margin-right: 5px;
+        .secure-badge span {
+            color: #D4AF37;
         }
         .loading-overlay {
             position: fixed;
@@ -187,7 +206,7 @@ $currency = PAYSTACK_CURRENCY;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.95);
             display: none;
             justify-content: center;
             align-items: center;
@@ -200,8 +219,8 @@ $currency = PAYSTACK_CURRENCY;
         .spinner {
             width: 50px;
             height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border: 4px solid #F9F5EC;
+            border-top: 4px solid #D4AF37;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -211,23 +230,57 @@ $currency = PAYSTACK_CURRENCY;
         }
         .loading-text {
             margin-top: 20px;
-            color: #333;
+            color: #7A5C3E;
             font-size: 16px;
         }
         .alert {
-            padding: 15px;
-            border-radius: 8px;
+            padding: 20px;
+            border-radius: 12px;
             margin-bottom: 20px;
         }
         .alert-danger {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: #FDF2F2;
+            color: #9B2C2C;
+            border: 1px solid #FEB2B2;
+        }
+        .alert-danger h4 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 10px;
         }
         .alert-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+            background: #F9F5EC;
+            color: #7A5C3E;
+            border: 1px solid #D4AF37;
+        }
+        .alert-info h4 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 10px;
+        }
+        .btn-primary {
+            background: #D4AF37;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: #B8941F;
+            color: white;
+        }
+        .btn-outline-primary {
+            background: transparent;
+            border: 1px solid #D4AF37;
+            color: #7A5C3E;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-primary:hover {
+            background: #D4AF37;
+            color: white;
         }
     </style>
 </head>

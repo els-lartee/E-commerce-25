@@ -11,26 +11,58 @@ $product_image = isset($_GET['image']) ? urldecode($_GET['image']) : '';
 $product_title = isset($_GET['title']) ? urldecode($_GET['title']) : 'Jewellery';
 $product_category = isset($_GET['category']) ? urldecode($_GET['category']) : '';
 
-// Determine jewellery type for positioning
-$jewellery_type = 'earring'; // default
-$category_lower = strtolower($product_category);
-if (strpos($category_lower, 'ring') !== false) {
-    $jewellery_type = 'ring';
-} elseif (strpos($category_lower, 'necklace') !== false || strpos($category_lower, 'chain') !== false || strpos($category_lower, 'pendant') !== false) {
-    $jewellery_type = 'necklace';
-} elseif (strpos($category_lower, 'bracelet') !== false || strpos($category_lower, 'bangle') !== false) {
-    $jewellery_type = 'bracelet';
-} elseif (strpos($category_lower, 'earring') !== false) {
-    $jewellery_type = 'earring';
+/**
+ * Determine jewellery type for AR positioning
+ * Checks both category name AND product title for keywords
+ */
+function detectJewelleryType($category, $title) {
+    // Combine category and title for searching
+    $search_text = strtolower($category . ' ' . $title);
+    
+    // Order matters - check more specific terms first
+    // Rings (but not "earrings")
+    if (preg_match('/\bring\b|\brings\b/i', $search_text) && strpos($search_text, 'earring') === false) {
+        return 'ring';
+    }
+    
+    // Necklaces, chains, pendants
+    if (strpos($search_text, 'necklace') !== false || 
+        strpos($search_text, 'chain') !== false || 
+        strpos($search_text, 'pendant') !== false ||
+        strpos($search_text, 'choker') !== false) {
+        return 'necklace';
+    }
+    
+    // Bracelets, bangles
+    if (strpos($search_text, 'bracelet') !== false || 
+        strpos($search_text, 'bangle') !== false ||
+        strpos($search_text, 'anklet') !== false) {
+        return 'bracelet';
+    }
+    
+    // Earrings (check last since "ring" is a substring)
+    if (strpos($search_text, 'earring') !== false || 
+        strpos($search_text, 'ear ring') !== false ||
+        strpos($search_text, 'stud') !== false ||
+        strpos($search_text, 'hoop') !== false ||
+        strpos($search_text, 'drop earring') !== false) {
+        return 'earring';
+    }
+    
+    // Default to earring if no match (most common jewellery type)
+    return 'earring';
 }
+
+$jewellery_type = detectJewelleryType($product_category, $product_title);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtual Try-On - <?php echo htmlspecialchars($product_title); ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Virtual Try-On - <?php echo htmlspecialchars($product_title); ?> | Golden Aura</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="../css/styles.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -39,58 +71,83 @@ if (strpos($category_lower, 'ring') !== false) {
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #FFFFFF 0%, #F9F5EC 100%);
             min-height: 100vh;
-            color: white;
+            color: #2B2B2B;
         }
         
         .tryon-container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 30px 20px;
         }
         
         .tryon-header {
             text-align: center;
-            padding: 20px 0;
+            padding: 20px 0 30px;
         }
         
         .tryon-header h1 {
-            font-size: 1.8rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
             margin-bottom: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #2B2B2B;
+        }
+        
+        .tryon-header h1 span {
+            color: #D4AF37;
         }
         
         .tryon-header p {
-            color: #888;
-            font-size: 0.95rem;
+            color: #666666;
+            font-size: 1rem;
+        }
+        
+        .tryon-header .tip-badge {
+            display: inline-block;
+            background: #F9F5EC;
+            border: 1px solid #D4AF37;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            color: #7A5C3E;
+            margin-top: 15px;
         }
         
         .ar-workspace {
             display: flex;
             gap: 30px;
-            margin-top: 30px;
+            margin-top: 20px;
         }
         
         .video-container {
             flex: 1;
             position: relative;
-            background: #000;
-            border-radius: 20px;
+            background: #FFFFFF;
+            border-radius: 12px;
             overflow: hidden;
             aspect-ratio: 4/3;
-            max-height: 70vh;
+            max-height: 65vh;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #F9F5EC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .canvas-wrapper {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+            max-height: 100%;
         }
         
         #photoCanvas {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
             display: none;
+            max-width: 100%;
+            max-height: 100%;
+            background: #1a1a1a;
         }
         
         #overlayCanvas {
@@ -100,7 +157,6 @@ if (strpos($category_lower, 'ring') !== false) {
             width: 100%;
             height: 100%;
             pointer-events: none;
-            transform: scaleX(-1); /* Mirror to match photo */
         }
         
         .upload-area {
@@ -108,66 +164,113 @@ if (strpos($category_lower, 'ring') !== false) {
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 60px;
-            border: 3px dashed #667eea;
-            border-radius: 20px;
+            padding: 50px 30px;
+            border: 2px dashed #D4AF37;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            background: #FFFFFF;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10;
         }
         
         .upload-area:hover {
-            background: rgba(102, 126, 234, 0.1);
+            background: #F9F5EC;
+            border-color: #7A5C3E;
         }
         
-        .upload-area.active {
+        .upload-area .upload-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #D4AF37 0%, #7A5C3E 100%);
+            border-radius: 50%;
             display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
         }
         
         .upload-area svg {
-            width: 60px;
-            height: 60px;
-            color: #667eea;
-            margin-bottom: 15px;
+            width: 35px;
+            height: 35px;
+            color: white;
+        }
+        
+        .upload-area h3 {
+            font-family: 'Playfair Display', serif;
+            color: #2B2B2B;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
         }
         
         .upload-area p {
-            color: #888;
-            margin-bottom: 15px;
+            color: #666666;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+        
+        .upload-area .formats {
+            color: #D4AF37;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        
+        .upload-area .tip-text {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #F9F5EC;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #7A5C3E;
         }
         
         .controls-panel {
-            width: 300px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+            width: 320px;
+            background: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             padding: 25px;
+            border: 1px solid #F9F5EC;
         }
         
         .product-preview {
             text-align: center;
             margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #F9F5EC;
         }
         
         .product-preview img {
-            max-width: 150px;
-            max-height: 150px;
-            border-radius: 15px;
-            background: white;
-            padding: 10px;
+            max-width: 140px;
+            max-height: 140px;
+            border-radius: 12px;
+            border: 2px solid #D4AF37;
+            padding: 8px;
+            background: #FFFFFF;
         }
         
         .product-preview h3 {
-            font-size: 1rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
             margin-top: 15px;
-            color: #ddd;
+            color: #2B2B2B;
         }
         
         .product-preview .badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: inline-block;
+            background: #F9F5EC;
+            color: #7A5C3E;
             padding: 5px 15px;
             border-radius: 20px;
             font-size: 0.8rem;
-            margin-top: 8px;
-            display: inline-block;
+            margin-top: 10px;
+            font-weight: 500;
+            border: 1px solid #D4AF37;
         }
         
         .control-group {
@@ -177,13 +280,51 @@ if (strpos($category_lower, 'ring') !== false) {
         .control-group label {
             display: block;
             margin-bottom: 8px;
-            color: #aaa;
+            color: #2B2B2B;
             font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .control-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            background: #FFFFFF;
+            color: #2B2B2B;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .control-group select:hover {
+            border-color: #7A5C3E;
+        }
+        
+        .control-group select:focus {
+            border-color: #7A5C3E;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
         }
         
         .control-group input[type="range"] {
             width: 100%;
-            accent-color: #667eea;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #F9F5EC;
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #D4AF37;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
         }
         
         .action-buttons {
@@ -194,82 +335,92 @@ if (strpos($category_lower, 'ring') !== false) {
         }
         
         .btn-action {
-            padding: 12px 20px;
+            padding: 14px 20px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            transition: all 0.3s;
+            gap: 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
         }
         
         .btn-capture {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #D4AF37;
             color: white;
         }
         
         .btn-capture:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            background: #B8941F;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
         
         .btn-download {
-            background: #28a745;
+            background: #7A5C3E;
             color: white;
         }
         
         .btn-download:hover {
-            background: #218838;
+            background: #5D4429;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(122, 92, 62, 0.3);
         }
         
         .btn-back {
-            background: transparent;
-            border: 2px solid #666;
-            color: #888;
+            background: #F9F5EC;
+            border: 1px solid #D4AF37;
+            color: #7A5C3E;
         }
         
         .btn-back:hover {
-            border-color: #667eea;
-            color: #667eea;
+            background: #D4AF37;
+            color: white;
         }
         
         .status-message {
             text-align: center;
             padding: 15px;
-            margin-top: 15px;
-            border-radius: 10px;
+            margin-top: 20px;
+            border-radius: 8px;
             font-size: 0.9rem;
         }
         
         .status-loading {
-            background: rgba(102, 126, 234, 0.2);
-            color: #667eea;
+            background: #F9F5EC;
+            color: #7A5C3E;
+            border: 1px solid #D4AF37;
         }
         
         .status-success {
-            background: rgba(40, 167, 69, 0.2);
-            color: #28a745;
+            background: #F9F5EC;
+            color: #7A5C3E;
+            border: 1px solid #D4AF37;
         }
         
         .status-error {
-            background: rgba(220, 53, 69, 0.2);
-            color: #dc3545;
+            background: #FDF2F2;
+            color: #9B2C2C;
+            border: 1px solid #FEB2B2;
         }
         
         .jewellery-type-info {
-            background: rgba(102, 126, 234, 0.1);
-            padding: 10px 15px;
-            border-radius: 10px;
+            background: #F9F5EC;
+            padding: 12px 15px;
+            border-radius: 8px;
             margin-bottom: 20px;
             font-size: 0.85rem;
-            color: #aaa;
+            color: #666666;
+            border-left: 3px solid #D4AF37;
         }
         
         .jewellery-type-info strong {
-            color: #667eea;
+            color: #7A5C3E;
         }
         
         /* Responsive */
@@ -290,12 +441,13 @@ if (strpos($category_lower, 'ring') !== false) {
         /* Loading spinner */
         .spinner {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255,255,255,0.3);
+            width: 18px;
+            height: 18px;
+            border: 2px solid #F9F5EC;
             border-radius: 50%;
-            border-top-color: white;
+            border-top-color: #D4AF37;
             animation: spin 1s linear infinite;
+            margin-right: 8px;
         }
         
         @keyframes spin {
@@ -311,27 +463,32 @@ if (strpos($category_lower, 'ring') !== false) {
 <body>
     <div class="tryon-container">
         <div class="tryon-header">
-            <h1>✨ Virtual Try-On Experience</h1>
+            <h1>✨ Virtual <span>Try-On</span> Experience</h1>
             <p>See how "<?php echo htmlspecialchars($product_title); ?>" looks on you!</p>
-            <p style="font-size: 0.85rem; color: #667eea; margin-top: 5px;">📸 Upload a photo to see how this jewellery looks on you!</p>
+            <div class="tip-badge">📸 Upload a photo to try on this beautiful piece</div>
         </div>
         
         <div class="ar-workspace">
             <!-- Photo Display -->
             <div class="video-container" id="videoContainer">
-                <canvas id="photoCanvas"></canvas>
-                <canvas id="overlayCanvas"></canvas>
+                <div class="canvas-wrapper" id="canvasWrapper">
+                    <canvas id="photoCanvas"></canvas>
+                    <canvas id="overlayCanvas"></canvas>
+                </div>
                 
                 <!-- Upload Area (shown by default) -->
-                <div class="upload-area active" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                    <p>Click or drag to upload your photo</p>
-                    <span style="color: #667eea;">Supports JPG, PNG</span>
-                    <p style="margin-top: 15px; font-size: 0.85rem; color: #888;">
-                        💡 Tip: For best results, use a well-lit photo showing your face/hands clearly
-                    </p>
+                <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h3>Upload Your Photo</h3>
+                    <p>Click or drag to upload</p>
+                    <span class="formats">Supports JPG, PNG</span>
+                    <div class="tip-text">
+                        💡 For best results, use a well-lit photo showing your face or hands clearly
+                    </div>
                 </div>
                 <input type="file" id="fileInput" accept="image/*" onchange="handleFileUpload(event)">
             </div>
@@ -352,6 +509,7 @@ if (strpos($category_lower, 'ring') !== false) {
                 
                 <div class="jewellery-type-info">
                     <strong>Detection Mode:</strong> 
+                    <span id="detectionModeText">
                     <?php 
                     $type_labels = [
                         'earring' => '👂 Ear detection for earrings',
@@ -361,6 +519,17 @@ if (strpos($category_lower, 'ring') !== false) {
                     ];
                     echo $type_labels[$jewellery_type] ?? '💎 General jewellery';
                     ?>
+                    </span>
+                </div>
+                
+                <div class="control-group">
+                    <label>Jewellery Type</label>
+                    <select id="jewelleryTypeSelect" onchange="changeJewelleryType(this.value)">
+                        <option value="earring" <?php echo $jewellery_type === 'earring' ? 'selected' : ''; ?>>👂 Earrings</option>
+                        <option value="necklace" <?php echo $jewellery_type === 'necklace' ? 'selected' : ''; ?>>📿 Necklace / Pendant</option>
+                        <option value="ring" <?php echo $jewellery_type === 'ring' ? 'selected' : ''; ?>>💍 Ring</option>
+                        <option value="bracelet" <?php echo $jewellery_type === 'bracelet' ? 'selected' : ''; ?>>⌚ Bracelet / Bangle</option>
+                    </select>
                 </div>
                 
                 <div class="control-group">
@@ -451,28 +620,85 @@ if (strpos($category_lower, 'ring') !== false) {
         
         // Initialize AR models
         async function initializeAR() {
-            showStatus('Loading AR models...', 'loading');
+            showStatus('Loading AR models... This may take a moment.', 'loading');
             
             try {
-                if (CONFIG.jewelleryType === 'ring' || CONFIG.jewelleryType === 'bracelet') {
-                    await initializeHands();
-                } else {
-                    await initializeFaceMesh();
+                // Only load the model we need initially (faster startup)
+                const needsFace = CONFIG.jewelleryType === 'earring' || CONFIG.jewelleryType === 'necklace';
+                const needsHands = CONFIG.jewelleryType === 'ring' || CONFIG.jewelleryType === 'bracelet';
+                
+                console.log('Initializing AR for type:', CONFIG.jewelleryType);
+                console.log('Needs face:', needsFace, 'Needs hands:', needsHands);
+                
+                // Add timeout wrapper
+                const timeoutPromise = (promise, ms, name) => {
+                    return Promise.race([
+                        promise,
+                        new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error(`${name} loading timeout after ${ms/1000}s`)), ms)
+                        )
+                    ]);
+                };
+                
+                const loadPromises = [];
+                
+                if (needsFace) {
+                    loadPromises.push(
+                        timeoutPromise(initializeFaceMesh(), 30000, 'Face Mesh')
+                            .then(() => { console.log('Face Mesh loaded successfully'); return 'face'; })
+                            .catch(err => { console.error('Face Mesh error:', err); return null; })
+                    );
                 }
                 
-                isModelLoaded = true;
-                showStatus('Ready! Upload a photo to try on the jewellery.', 'success');
+                if (needsHands) {
+                    loadPromises.push(
+                        timeoutPromise(initializeHands(), 30000, 'Hands')
+                            .then(() => { console.log('Hands model loaded successfully'); return 'hands'; })
+                            .catch(err => { console.error('Hands error:', err); return null; })
+                    );
+                }
+                
+                // Also pre-load the other model in background for type switching
+                if (!needsFace) {
+                    initializeFaceMesh().catch(err => console.log('Background face mesh load failed:', err));
+                }
+                if (!needsHands) {
+                    initializeHands().catch(err => console.log('Background hands load failed:', err));
+                }
+                
+                const results = await Promise.all(loadPromises);
+                const successfulLoads = results.filter(r => r !== null);
+                
+                console.log('Load results:', results);
+                
+                if (successfulLoads.length > 0) {
+                    isModelLoaded = true;
+                    showStatus('Ready! Upload a photo to try on the jewellery.', 'success');
+                    
+                    // If user already uploaded an image while waiting, process it now
+                    if (currentImageData) {
+                        await processImage();
+                    }
+                } else {
+                    throw new Error('Required model failed to load');
+                }
                 
             } catch (error) {
                 console.error('AR initialization error:', error);
-                showStatus('Failed to load AR models. Please refresh.', 'error');
+                showStatus('AR models failed to load. You can still view your photo, but try-on won\'t work. Refresh to retry.', 'error');
+                // Still allow viewing photos without AR
+                isModelLoaded = false;
             }
         }
         
         // Initialize Face Mesh for earrings/necklaces
         async function initializeFaceMesh() {
+            console.log('Starting Face Mesh initialization...');
             faceMesh = new FaceMesh({
-                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+                locateFile: (file) => {
+                    console.log('Loading face mesh file:', file);
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+                }
             });
             
             faceMesh.setOptions({
@@ -483,13 +709,19 @@ if (strpos($category_lower, 'ring') !== false) {
             });
             
             faceMesh.onResults(onFaceMeshResults);
+            console.log('Calling faceMesh.initialize()...');
             await faceMesh.initialize();
+            console.log('Face Mesh initialization complete');
         }
         
         // Initialize Hands for rings/bracelets
         async function initializeHands() {
+            console.log('Starting Hands initialization...');
             hands = new Hands({
-                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+                locateFile: (file) => {
+                    console.log('Loading hands file:', file);
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+                }
             });
             
             hands.setOptions({
@@ -500,7 +732,9 @@ if (strpos($category_lower, 'ring') !== false) {
             });
             
             hands.onResults(onHandsResults);
+            console.log('Calling hands.initialize()...');
             await hands.initialize();
+            console.log('Hands initialization complete');
         }
         
         // Face Mesh results handler
@@ -541,18 +775,29 @@ if (strpos($category_lower, 'ring') !== false) {
         
         // Draw earrings at ear positions
         function drawEarrings(landmarks) {
-            if (!jewelleryImg.complete) return;
+            console.log('drawEarrings called, image complete:', jewelleryImg.complete, 'natural size:', jewelleryImg.naturalWidth, 'x', jewelleryImg.naturalHeight);
+            if (!jewelleryImg.complete || jewelleryImg.naturalWidth === 0) {
+                console.error('Jewellery image not loaded properly');
+                return;
+            }
             
             const leftEar = landmarks[234];  // Left ear tragion
             const rightEar = landmarks[454]; // Right ear tragion
+            
+            console.log('Left ear:', leftEar, 'Right ear:', rightEar);
+            console.log('Overlay canvas size:', overlayCanvas.width, 'x', overlayCanvas.height);
             
             // Calculate size based on face width
             const faceWidth = Math.abs(landmarks[234].x - landmarks[454].x) * overlayCanvas.width;
             const earringSize = faceWidth * 0.25 * sizeMultiplier;
             
+            console.log('Face width:', faceWidth, 'Earring size:', earringSize);
+            
             // Draw left earring
             const leftX = leftEar.x * overlayCanvas.width + positionOffsetX;
             const leftY = leftEar.y * overlayCanvas.height + earringSize * 0.3 + positionOffsetY;
+            
+            console.log('Drawing left earring at:', leftX, leftY);
             
             overlayCtx.save();
             overlayCtx.translate(leftX, leftY);
@@ -563,10 +808,14 @@ if (strpos($category_lower, 'ring') !== false) {
             const rightX = rightEar.x * overlayCanvas.width + positionOffsetX;
             const rightY = rightEar.y * overlayCanvas.height + earringSize * 0.3 + positionOffsetY;
             
+            console.log('Drawing right earring at:', rightX, rightY);
+            
             overlayCtx.save();
             overlayCtx.translate(rightX, rightY);
             overlayCtx.drawImage(jewelleryImg, -earringSize/2, 0, earringSize, earringSize);
             overlayCtx.restore();
+            
+            console.log('Earrings drawn');
         }
         
         // Draw necklace at neck position
@@ -638,38 +887,54 @@ if (strpos($category_lower, 'ring') !== false) {
             const file = event.target.files[0];
             if (!file) return;
             
-            if (!isModelLoaded) {
-                showStatus('AR models still loading. Please wait...', 'loading');
-                return;
-            }
+            console.log('File selected:', file.name, file.type, file.size);
             
             showStatus('Processing image...', 'loading');
             
             const img = new Image();
+            
+            img.onerror = (err) => {
+                console.error('Failed to load image:', err);
+                showStatus('Failed to load image. Try another file.', 'error');
+            };
+            
             img.onload = async () => {
-                // Set canvas size to image size
-                photoCanvas.width = img.width;
-                photoCanvas.height = img.height;
-                overlayCanvas.width = img.width;
-                overlayCanvas.height = img.height;
+                console.log('Image loaded:', img.width, 'x', img.height);
                 
-                // Draw image on canvas (mirrored for selfie-style)
-                photoCtx.save();
-                photoCtx.scale(-1, 1);
-                photoCtx.drawImage(img, -img.width, 0);
-                photoCtx.restore();
-                
-                // Store original image for re-processing
-                currentImageData = img;
-                
-                // Show photo canvas, hide upload area
-                photoCanvas.style.display = 'block';
-                uploadArea.classList.remove('active');
-                
-                // Process with MediaPipe
-                await processImage();
-                
-                downloadBtn.style.display = 'flex';
+                try {
+                    // Set canvas size to image size
+                    photoCanvas.width = img.width;
+                    photoCanvas.height = img.height;
+                    overlayCanvas.width = img.width;
+                    overlayCanvas.height = img.height;
+                    
+                    // Draw image on canvas (NOT mirrored - draw normally)
+                    photoCtx.drawImage(img, 0, 0);
+                    
+                    // Store original image for re-processing
+                    currentImageData = img;
+                    
+                    // Show photo canvas, hide upload area
+                    console.log('Showing canvas, hiding upload area');
+                    uploadArea.style.display = 'none';
+                    photoCanvas.style.display = 'block';
+                    
+                    console.log('Canvas display:', photoCanvas.style.display);
+                    console.log('Upload area display:', uploadArea.style.display);
+                    console.log('Canvas dimensions:', photoCanvas.width, 'x', photoCanvas.height);
+                    
+                    // Process with MediaPipe if model is loaded
+                    if (isModelLoaded) {
+                        await processImage();
+                    } else {
+                        showStatus('Photo displayed. AR models still loading...', 'loading');
+                    }
+                    
+                    downloadBtn.style.display = 'flex';
+                } catch (err) {
+                    console.error('Error processing image:', err);
+                    showStatus('Error processing image. Please try again.', 'error');
+                }
             };
             
             img.src = URL.createObjectURL(file);
@@ -711,19 +976,16 @@ if (strpos($category_lower, 'ring') !== false) {
             // Draw photo
             tempCtx.drawImage(photoCanvas, 0, 0);
             
-            // Draw overlay (mirrored to match)
-            tempCtx.save();
-            tempCtx.scale(-1, 1);
-            tempCtx.drawImage(overlayCanvas, -tempCanvas.width, 0);
-            tempCtx.restore();
+            // Draw overlay directly on top
+            tempCtx.drawImage(overlayCanvas, 0, 0);
             
             // Download
             const link = document.createElement('a');
-            link.download = `tryon_${CONFIG.productTitle.replace(/\s+/g, '_')}_${Date.now()}.png`;
+            link.download = `GoldenAura_TryOn_${Date.now()}.png`;
             link.href = tempCanvas.toDataURL('image/png');
             link.click();
             
-            showStatus('Photo downloaded!', 'success');
+            showStatus('✨ Photo downloaded!', 'success');
         }
         
         // Update size from slider
@@ -741,6 +1003,69 @@ if (strpos($category_lower, 'ring') !== false) {
         function updatePositionX(value) {
             positionOffsetX = parseInt(value);
             if (currentImageData) processImage();
+        }
+        
+        // Change jewellery type dynamically
+        async function changeJewelleryType(newType) {
+            const oldType = CONFIG.jewelleryType;
+            CONFIG.jewelleryType = newType;
+            
+            // Update detection mode text
+            const modeLabels = {
+                'earring': '👂 Ear detection for earrings',
+                'necklace': '📿 Neck detection for necklaces',
+                'ring': '💍 Hand detection for rings',
+                'bracelet': '⌚ Wrist detection for bracelets'
+            };
+            document.getElementById('detectionModeText').textContent = modeLabels[newType] || '💎 General jewellery';
+            
+            // Check if we need to switch detection models
+            const needsFace = (newType === 'earring' || newType === 'necklace');
+            const hadFace = (oldType === 'earring' || oldType === 'necklace');
+            
+            if (needsFace !== hadFace) {
+                // Need to load different model
+                showStatus('Switching detection mode...', 'loading');
+                isModelLoaded = false;
+                
+                try {
+                    if (needsFace) {
+                        if (!faceMesh) {
+                            await initializeFaceMesh();
+                        }
+                    } else {
+                        if (!hands) {
+                            await initializeHands();
+                        }
+                    }
+                    isModelLoaded = true;
+                    showStatus('Detection mode changed! Re-processing...', 'success');
+                } catch (error) {
+                    console.error('Error switching models:', error);
+                    showStatus('Failed to switch detection mode', 'error');
+                    CONFIG.jewelleryType = oldType; // Revert
+                    document.getElementById('jewelleryTypeSelect').value = oldType;
+                    return;
+                }
+            }
+            
+            // Clear overlay and reprocess if we have an image
+            overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+            if (currentImageData && isModelLoaded) {
+                await processImage();
+            } else {
+                showStatus('Type changed to ' + modeLabels[newType].split(' ')[0] + '. Upload a photo to try it on!', 'success');
+            }
+        }
+        
+        // Reset upload area (for uploading new photo)
+        function resetUpload() {
+            uploadArea.style.display = 'flex';
+            photoCanvas.style.display = 'none';
+            downloadBtn.style.display = 'none';
+            currentImageData = null;
+            overlayCtx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+            photoCtx.clearRect(0, 0, photoCanvas.width, photoCanvas.height);
         }
         
         // Show status message

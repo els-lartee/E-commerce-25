@@ -9,25 +9,28 @@ $currency = PAYSTACK_CURRENCY;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Successful - Jewellery Store</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Payment Successful - Golden Aura Jewellery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="../css/styles.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #FFFFFF 0%, #F9F5EC 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
         .success-card {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.1);
             max-width: 550px;
-            width: 90%;
+            width: 100%;
             overflow: hidden;
             animation: slideUp 0.5s ease-out;
+            border: 1px solid #F9F5EC;
         }
         @keyframes slideUp {
             from {
@@ -40,7 +43,7 @@ $currency = PAYSTACK_CURRENCY;
             }
         }
         .success-header {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            background: linear-gradient(135deg, #D4AF37 0%, #7A5C3E 100%);
             padding: 40px;
             text-align: center;
             color: white;
@@ -55,8 +58,9 @@ $currency = PAYSTACK_CURRENCY;
             justify-content: center;
             margin: 0 auto 20px;
             font-size: 40px;
-            color: #38ef7d;
+            color: #D4AF37;
             animation: checkmark 0.5s ease-in-out 0.3s both;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
         @keyframes checkmark {
             0% {
@@ -70,6 +74,7 @@ $currency = PAYSTACK_CURRENCY;
             }
         }
         .success-header h1 {
+            font-family: 'Playfair Display', serif;
             margin: 0;
             font-size: 28px;
             font-weight: 700;
@@ -77,48 +82,51 @@ $currency = PAYSTACK_CURRENCY;
         .success-header p {
             margin: 10px 0 0;
             opacity: 0.9;
+            font-weight: 300;
         }
         .success-body {
             padding: 30px;
         }
         .order-details {
-            background: #f8f9fa;
+            background: #F9F5EC;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 25px;
         }
         .order-details h4 {
-            color: #333;
+            font-family: 'Playfair Display', serif;
+            color: #2B2B2B;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #38ef7d;
+            border-bottom: 2px solid #D4AF37;
         }
         .detail-row {
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
         }
         .detail-row:last-child {
             border-bottom: none;
         }
         .detail-label {
-            color: #666;
+            color: #666666;
             font-weight: 500;
         }
         .detail-value {
-            color: #333;
+            color: #2B2B2B;
             font-weight: 600;
         }
         .detail-value.amount {
-            color: #38ef7d;
+            color: #D4AF37;
             font-size: 18px;
         }
         .payment-badge {
             display: inline-block;
             padding: 4px 12px;
-            background: #d4edda;
-            color: #155724;
+            background: #F9F5EC;
+            color: #7A5C3E;
+            border: 1px solid #D4AF37;
             border-radius: 20px;
             font-size: 13px;
             font-weight: 600;
@@ -131,46 +139,47 @@ $currency = PAYSTACK_CURRENCY;
         .btn-continue {
             flex: 1;
             padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #D4AF37;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: 600;
             text-decoration: none;
             text-align: center;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
         }
         .btn-continue:hover {
+            background: #B8941F;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
             color: white;
         }
         .btn-orders {
             flex: 1;
             padding: 15px;
-            background: #f8f9fa;
-            color: #333;
-            border: 2px solid #ddd;
-            border-radius: 10px;
+            background: #F9F5EC;
+            color: #7A5C3E;
+            border: 1px solid #D4AF37;
+            border-radius: 12px;
             font-weight: 600;
             text-decoration: none;
             text-align: center;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
         }
         .btn-orders:hover {
-            background: #e9ecef;
-            color: #333;
+            background: #D4AF37;
+            color: white;
         }
         .email-notice {
             text-align: center;
-            color: #666;
+            color: #666666;
             font-size: 14px;
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid #eee;
+            border-top: 1px solid #F9F5EC;
         }
-        .email-notice i {
-            color: #667eea;
+        .email-notice span {
+            color: #D4AF37;
         }
     </style>
 </head>
@@ -196,7 +205,7 @@ $currency = PAYSTACK_CURRENCY;
             </div>
 
             <div class="email-notice">
-                📧 A confirmation email has been sent to your registered email address.
+                <span>📧</span> A confirmation email has been sent to your registered email address.
             </div>
         </div>
     </div>

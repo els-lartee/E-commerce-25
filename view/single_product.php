@@ -10,23 +10,25 @@ require_once '../settings/core.php';
     <link href="../css/styles.css" rel="stylesheet">
     <style>
         .btn-tryon {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #7A5C3E;
             color: white;
             border: none;
             padding: 12px 24px;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1rem;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-decoration: none;
             margin-top: 15px;
+            font-family: 'Poppins', sans-serif;
         }
         .btn-tryon:hover {
+            background: #5D4429;
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 20px rgba(122, 92, 62, 0.4);
             color: white;
         }
         .btn-tryon svg {
@@ -34,7 +36,7 @@ require_once '../settings/core.php';
             height: 20px;
         }
         .tryon-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #D4AF37;
             color: white;
             font-size: 0.7rem;
             padding: 3px 8px;
