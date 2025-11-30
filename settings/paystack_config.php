@@ -11,7 +11,9 @@
 // Set to false for production
 define('PAYSTACK_TEST_MODE', true);
 
-
+// Test Keys (Replace with your actual test keys from Paystack dashboard)
+define('PAYSTACK_SECRET_KEY', 'sk_test_007adcc0e8ab8a525a217d5233c5ca40e945057c');
+define('PAYSTACK_PUBLIC_KEY', 'pk_test_5995cf1420d788d99c1831479efe3f77ab4fdefa');
 
 // Paystack API Base URL
 define('PAYSTACK_API_URL', 'https://api.paystack.co');
