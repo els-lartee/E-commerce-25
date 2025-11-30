@@ -8,6 +8,41 @@ require_once '../settings/core.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details</title>
     <link href="../css/styles.css" rel="stylesheet">
+    <style>
+        .btn-tryon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+            margin-top: 15px;
+        }
+        .btn-tryon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .btn-tryon svg {
+            width: 20px;
+            height: 20px;
+        }
+        .tryon-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -52,14 +87,29 @@ require_once '../settings/core.php';
                 ? `<img src="${imageUrl}" class="product-image" alt="${product.product_title}">`
                 : `<div class="product-image-placeholder"><span>No Image</span></div>`;
 
+            // Build Try-On URL with product info
+            const tryOnUrl = `virtual_tryon.php?id=${product.product_id}&image=${encodeURIComponent(product.product_image || '')}&title=${encodeURIComponent(product.product_title)}&category=${encodeURIComponent(product.cat_name || '')}`;
+            
+            // Check if product has an image (required for AR try-on)
+            const tryOnButton = product.product_image 
+                ? `<a href="${tryOnUrl}" class="btn-tryon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    Try It On <span class="tryon-badge">AR</span>
+                   </a>`
+                : '';
+
             const html = `
                 <div class="product-detail">
                     <div class="product-image-container">
                         ${imageHtml}
+                        ${tryOnButton}
                     </div>
                     <div class="product-info">
                         <h1>${product.product_title}</h1>
-                        <div class="product-price">$${parseFloat(product.product_price).toFixed(2)}</div>
+                        <div class="product-price">GHS ${parseFloat(product.product_price).toFixed(2)}</div>
                         <div class="product-meta">
                             Category: ${product.cat_name || 'N/A'}<br>
                             Brand: ${product.brand_name || 'N/A'}

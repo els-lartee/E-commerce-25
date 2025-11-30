@@ -366,7 +366,7 @@ class GeminiChatbot extends db_connection {
         // Add model acknowledgment
         $contents[] = [
             'role' => 'model',
-            'parts' => [['text' => "I understand! I'm the AI assistant for Elegant Jewels in Ghana. I have access to the current inventory and can help customers with accurate product information, prices in GHS, and shopping assistance. How can I help you today?"]]
+            'parts' => [['text' => "I understand! I'm the AI assistant for Golden Aura Jewellery in Ghana. I have access to the current inventory and can help customers with accurate product information, prices in GHS, and shopping assistance. How can I help you today?"]]
         ];
         
         // Add conversation history
@@ -572,7 +572,7 @@ class GeminiChatbot extends db_connection {
      * @return string Welcome message
      */
     public function getWelcomeMessage() {
-        $welcome = "Hello! Welcome to Elegant Jewels! I'm your AI assistant.\n\n";
+        $welcome = "Hello! Welcome to Golden Aura Jewellery! I'm your AI assistant.\n\n";
         
         // Get quick store stats
         $conn = $this->db_conn();
