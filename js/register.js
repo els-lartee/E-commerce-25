@@ -1,4 +1,8 @@
 $(document).ready(function() {
+    // Get redirect URL from URL parameters if available
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get('redirect') || '../index.php';
+    
     $('#register-form').submit(function(e) {
         e.preventDefault();
 
@@ -131,7 +135,8 @@ $(document).ready(function() {
                                     text: response.message,
                                 }).then((result) => {
                                     if (result.isConfirmed) {
-                                        window.location.href = '../login/login.php';
+                                        // Redirect to login with the original redirect URL
+                                        window.location.href = '../login/login.php?redirect=' + encodeURIComponent(redirectUrl);
                                     }
                                 });
                             } else {

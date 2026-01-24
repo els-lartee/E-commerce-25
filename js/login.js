@@ -1,4 +1,8 @@
 $(document).ready(function() {
+    // Get redirect URL from URL parameters if available
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get('redirect') || '../index.php';
+    
     $('#login-form').submit(function(e) {
         e.preventDefault();
 
@@ -57,7 +61,7 @@ $(document).ready(function() {
                         text: response.message,
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = '../index.php';
+                            window.location.href = redirectUrl;
                         }
                     });
                 } else {

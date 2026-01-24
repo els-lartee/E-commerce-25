@@ -41,8 +41,8 @@ Cart
 <h1>Welcome, Admin!</h1>
 <p class="text-muted">Use the menu in the top-right to manage Jewellery, Brands, and Products.</p>
 </div>
-<?php else: ?>
-<!-- Products section for all users (guests and customers) -->
+<?php elseif (is_logged_in()): ?>
+<!-- Products section for logged-in customers only -->
 <div class="mt-3">
 	<!-- Search and Filters -->
 	<div class="row mb-4">
@@ -72,6 +72,36 @@ Cart
 	<h2>Available Products</h2>
 	<div id="productsContainer" class="row"></div>
 </div>
+<?php else: ?>
+<!-- Guest user - show login/register prompt instead of products -->
+<div class="mt-5">
+	<div class="text-center">
+		<div class="mb-4">
+			<i class="fas fa-lock fa-4x text-muted"></i>
+		</div>
+		<h2>Welcome to Our Store!</h2>
+		<p class="lead text-muted">Please login or create an account to browse our products.</p>
+		
+		<div class="d-flex justify-content-center gap-3 mt-4">
+			<a href="login/login.php" class="btn btn-primary btn-lg">
+				<i class="fas fa-sign-in-alt me-2"></i>Login
+			</a>
+			<a href="login/register.php" class="btn btn-outline-primary btn-lg">
+				<i class="fas fa-user-plus me-2"></i>Register
+			</a>
+		</div>
+		
+		<div class="mt-5">
+			<h5>Why create an account?</h5>
+			<ul class="text-muted text-start d-inline-block">
+				<li>Browse and purchase our exclusive products</li>
+				<li>Track your orders easily</li>
+				<li>Save your favorite items for later</li>
+				<li>Get personalized recommendations</li>
+			</ul>
+		</div>
+	</div>
+</div>
 <?php endif; ?>
 </div>
 
@@ -92,7 +122,7 @@ let allProducts = [];
 let filteredProducts = [];
 
 $(document).ready(function(){
-<?php if (!is_admin()): ?>
+<?php if (is_logged_in() && !is_admin()): ?>
 loadProducts();
 updateCartCount();
 loadFilters();

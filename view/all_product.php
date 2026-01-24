@@ -1,3 +1,12 @@
+<?php 
+require_once '../settings/core.php';
+
+// Redirect non-logged-in users to login page
+if (!is_logged_in()) {
+    header('Location: ../login/login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,6 +22,7 @@
             <div class="cart-info">
                 <a href="../view/cart.php" class="btn btn-secondary">View Cart (<span id="cart-count">0</span>)</a>
                 <a href="../index.php" class="btn btn-secondary">Back to Home</a>
+                <a href="../login/logout.php" class="btn btn-outline-danger">Logout</a>
             </div>
         </div>
 

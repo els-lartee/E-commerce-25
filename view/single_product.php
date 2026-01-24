@@ -1,5 +1,11 @@
 <?php 
 require_once '../settings/core.php';
+
+// Redirect non-logged-in users to login page
+if (!is_logged_in()) {
+    header('Location: ../login/login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
