@@ -1,3 +1,15 @@
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Log product views
+    document.querySelectorAll(".product-card").forEach(card => {
+        const productId = card.dataset.productId;
+        if (productId) {
+            logInteraction(productId, "view");
+        }
+    });
+
+});
+
 function logInteraction(productId, action, duration = 0) {
     fetch("actions/log_interaction.php", {
         method: "POST",
@@ -7,8 +19,9 @@ function logInteraction(productId, action, duration = 0) {
         body: `product_id=${productId}&action=${action}&duration=${duration}`
     });
 }
+
 function startARTryOn(productId) {
     logInteraction(productId, "ar_tryon");
 
-    // your existing AR logic continues here
+    // your AR logic continues here
 }

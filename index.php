@@ -212,15 +212,16 @@ src="js/interactions.js">
 	logInteraction(<?= $product['product_id'] ?>, 'view');
 <?php endforeach; ?>
 
-<div class="product-card">
-    <h4><?= $product['name'] ?></h4>
-    <p><?= $product['price'] ?></p>
+<div class="product-card" data-product-id="<?= $product['id'] ?>">
+    <h4><?= htmlspecialchars($product['name']) ?></h4>
+    <p><?= htmlspecialchars($product['price']) ?></p>
+
+    <button onclick="startARTryOn(<?= $product['id'] ?>)">
+        Try AR
+    </button>
 </div>
-
-<script>
-    logInteraction(<?= $product['id'] ?>, "view");
+logInteraction(<?= $product['id'] ?>, "view");
 </script>
-
 </script>
 </body>
 </html>
