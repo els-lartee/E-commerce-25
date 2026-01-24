@@ -10,6 +10,86 @@ require_once 'settings/core.php';
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link href="css/styles.css" rel="stylesheet">
+<style>
+/* Recommendations Section Styling */
+.recommendations-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 40px;
+}
+
+.recommendations-section h3 {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.rec-product-card {
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.rec-product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.rec-product-card .card-img-top {
+    height: 120px !important;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.rec-product-card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.rec-product-card .card-body {
+    padding: 12px;
+}
+
+.rec-product-card .card-title {
+    font-size: 0.85rem !important;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rec-product-card .card-text {
+    margin-bottom: 10px;
+}
+
+.rec-product-card .card-text strong {
+    color: #7A5C3E;
+    font-size: 0.95rem;
+}
+
+.rec-product-card .btn {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.rec-product-card .btn-info {
+    background: #7A5C3E;
+    border-color: #7A5C3E;
+    color: white;
+}
+
+.rec-product-card .btn-info:hover {
+    background: #5D4429;
+    border-color: #5D4429;
+    color: white;
+}
+</style>
 </head>
 <body>
 
@@ -70,10 +150,10 @@ Cart
 		</div>
 	</div>
 
-	<!-- Recommended Products Section -->
-	<div class="mb-5" id="recommendationsSection" style="display:none;">
+<!-- Recommended Products Section -->
+	<div class="recommendations-section" id="recommendationsSection" style="display:none;">
 		<h3 class="mb-3"><i class="fas fa-star text-warning"></i> Recommended For You</h3>
-		<p class="text-muted small">Based on your browsing history</p>
+		<p class="text-muted small mb-3">Based on your browsing history</p>
 		<div id="recommendationsContainer" class="row"></div>
 	</div>
 
@@ -270,17 +350,17 @@ function displayRecommendations(products) {
     let html = '';
     products.forEach(p => {
         const img = p.product_image ? 
-            `<img src="${p.product_image}" class="card-img-top" style="height:150px; object-fit:cover;" alt="${p.product_title}">` : 
-            '<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:150px;"><span class="text-muted">No Image</span></div>';
+            `<img src="${p.product_image}" class="card-img-top" alt="${p.product_title}">` : 
+            '<div class="card-img-top bg-light d-flex align-items-center justify-content-center"><span class="text-muted">No Image</span></div>';
         
         html += `
-        <div class="col-md-3 mb-3">
-            <div class="card h-100">
+        <div class="col-6 col-md-3 mb-3">
+            <div class="card rec-product-card h-100">
                 ${img}
-                <div class="card-body p-2">
-                    <h6 class="card-title" style="font-size:0.9rem;">${p.product_title}</h6>
-                    <p class="card-text"><strong>$${p.product_price}</strong></p>
-                    <a href="view/single_product.php?id=${p.product_id}" class="btn btn-info btn-sm">View Details</a>
+                <div class="card-body">
+                    <h6 class="card-title" title="${p.product_title}">${p.product_title}</h6>
+                    <p class="card-text"><strong>GHS ${parseFloat(p.product_price).toFixed(2)}</strong></p>
+                    <a href="view/single_product.php?id=${p.product_id}" class="btn btn-info btn-sm w-100">View Details</a>
                 </div>
             </div>
         </div>
