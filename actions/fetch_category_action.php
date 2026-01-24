@@ -2,6 +2,11 @@
 header('Content-Type: application/json');
 session_start();
 require_once '../settings/core.php';
+
+if (!isset($_SESSION['session_id'])) {
+    $_SESSION['session_id'] = uniqid("sess_", true);
+}
+
 require_once '../settings/db_class.php';
 
 if (!is_logged_in() || !is_admin()) {

@@ -3,6 +3,11 @@ session_start();
 header('Content-Type: application/json');
 
 require_once '../settings/core.php';
+
+if (!isset($_SESSION['session_id'])) {
+    $_SESSION['session_id'] = uniqid("sess_", true);
+}
+
 require_once '../controllers/jewellery_controller.php';
 
 if (!is_logged_in() || !is_admin()) {

@@ -4,6 +4,11 @@ ini_set('display_errors', 1);
 header('Content-Type: application/json');
 session_start();
 require_once '../settings/core.php';
+
+if (!isset($_SESSION['session_id'])) {
+    $_SESSION['session_id'] = uniqid("sess_", true);
+}
+
 require_once '../controllers/product_controller.php';
 
 if (!is_logged_in() || !is_admin()) {

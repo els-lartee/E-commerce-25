@@ -12,6 +12,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Set session_id if not already set
+if (!isset($_SESSION['session_id'])) {
+    $_SESSION['session_id'] = uniqid("sess_", true);
+}
+
 //for header redirection
 ob_start();
 

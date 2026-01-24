@@ -207,6 +207,20 @@ Add to Cart
 });
 $('#productsContainer').html(html);
 }
+src="js/interactions.js">
+<?php foreach ($products as $product): ?>
+	logInteraction(<?= $product['product_id'] ?>, 'view');
+<?php endforeach; ?>
+
+<div class="product-card">
+    <h4><?= $product['name'] ?></h4>
+    <p><?= $product['price'] ?></p>
+</div>
+
+<script>
+    logInteraction(<?= $product['id'] ?>, "view");
+</script>
+
 </script>
 </body>
 </html>

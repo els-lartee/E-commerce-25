@@ -1,4 +1,10 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['session_id'])) {
+    $_SESSION['session_id'] = uniqid("sess_", true);
+}
+
 header('Content-Type: application/json');
 require_once '../classes/brand_class.php';
 

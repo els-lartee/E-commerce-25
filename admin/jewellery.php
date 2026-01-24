@@ -2,6 +2,10 @@
 session_start();
 require_once '../settings/core.php';
 
+if (!isset($_SESSION['session_id'])) {
+    $_SESSION['session_id'] = uniqid("sess_", true);
+}
+
 // Check if user is logged in and is admin
 if (!is_logged_in() || !is_admin()) {
     header("Location: ../login/login.php");

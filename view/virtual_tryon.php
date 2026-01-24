@@ -1086,6 +1086,11 @@ $jewellery_type = detectJewelleryType($product_category, $product_title);
                 showStatus('No product image available', 'error');
             }
         });
+        
+<button onclick="startARTryOn(<?= $product['id'] ?>)">
+    Try AR
+</button>
+
     </script>
 </body>
 </html>

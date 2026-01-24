@@ -6,6 +6,10 @@ error_reporting(E_ALL);
 session_start();
 header('Content-Type: application/json');
 
+if (!isset($_SESSION['session_id'])) {
+    $_SESSION['session_id'] = uniqid("sess_", true);
+}
+
 $response = array();
 
 if (isset($_SESSION['user_id'])) {

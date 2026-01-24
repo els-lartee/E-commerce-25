@@ -2,6 +2,10 @@
 require_once(__DIR__ . "/../controllers/brand_controller.php");
 session_start();
 
+if (!isset($_SESSION['session_id'])) {
+    $_SESSION['session_id'] = uniqid("sess_", true);
+}
+
 if (!isset($_SESSION['user_id'])) {
     echo json_encode([]);
     exit;

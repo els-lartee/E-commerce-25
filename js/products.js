@@ -155,3 +155,11 @@
     });
 
 })();
+
+function logInteraction(productId, action, duration = 0) {
+  fetch("log_interaction.php", {
+    method: "POST",
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body: `product_id=${productId}&action=${action}&duration=${duration}`
+  });
+}
