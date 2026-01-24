@@ -8,6 +8,7 @@ require_once 'settings/core.php';
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Home</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <link href="css/styles.css" rel="stylesheet">
 </head>
 <body>
@@ -69,6 +70,14 @@ Cart
 		</div>
 	</div>
 
+	<!-- Recommended Products Section -->
+	<div class="mb-5" id="recommendationsSection" style="display:none;">
+		<h3 class="mb-3"><i class="fas fa-star text-warning"></i> Recommended For You</h3>
+		<p class="text-muted small">Based on your browsing history</p>
+		<div id="recommendationsContainer" class="row"></div>
+	</div>
+
+	<!-- All Products Section -->
 	<h2>Available Products</h2>
 	<div id="productsContainer" class="row"></div>
 </div>
@@ -126,6 +135,7 @@ $(document).ready(function(){
 loadProducts();
 updateCartCount();
 loadFilters();
+loadRecommendations();
 
 $('#categoryFilter, #brandFilter').on('change', filterProducts);
 $('#clearFilters').on('click', function() {
@@ -230,6 +240,55 @@ Add to Cart
 `;
 });
 $('#productsContainer').html(html);
+}
+
+/**
+ * Load personalized recommendations
+ */
+function loadRecommendations() {
+    $.getJSON('actions/get_recommendations_action.php?limit=4', function(data) {
+        if (data.status === 'success' && data.recommendations && data.recommendations.length > 0) {
+            displayRecommendations(data.recommendations);
+        }
+    }).fail(function() {
+        // Silently fail - recommendations are not critical
+        console.log('Could not load recommendations');
+    });
+}
+
+/**
+ * Display recommendations in the container
+ */
+function displayRecommendations(products) {
+    const container = $('#recommendationsContainer');
+    const section = $('#recommendationsSection');
+    
+    if (!products || products.length === 0) {
+        return;
+    }
+    
+    let html = '';
+    products.forEach(p => {
+        const img = p.product_image ? 
+            `<img src="${p.product_image}" class="card-img-top" style="height:150px; object-fit:cover;" alt="${p.product_title}">` : 
+            '<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:150px;"><span class="text-muted">No Image</span></div>';
+        
+        html += `
+        <div class="col-md-3 mb-3">
+            <div class="card h-100">
+                ${img}
+                <div class="card-body p-2">
+                    <h6 class="card-title" style="font-size:0.9rem;">${p.product_title}</h6>
+                    <p class="card-text"><strong>$${p.product_price}</strong></p>
+                    <a href="view/single_product.php?id=${p.product_id}" class="btn btn-info btn-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+        `;
+    });
+    
+    container.html(html);
+    section.show();
 }
 </script>
 
