@@ -11,10 +11,7 @@ if (!isset($_SESSION['session_id'])) {
 
 require_once '../controllers/product_controller.php';
 
-if (!is_logged_in()) {
-    echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
-    exit;
-}
+// Allow both logged-in users and guests to view products
 
 $products = get_all_products_ctr();
 echo json_encode(['status' => 'success', 'products' => $products]);

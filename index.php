@@ -35,20 +35,14 @@ Cart
 
 <div class="container" style="padding-top:120px;">
 
-<?php if (!isset($_SESSION['user_id'])): ?>
-<!-- Welcome message for guests -->
-<div class="text-center">
-<h1>Welcome to Our Store</h1>
-<p class="text-muted">Please register or login using the menu in the top-right to browse our products.</p>
-</div>
-<?php elseif (is_admin()): ?>
+<?php if (is_admin()): ?>
 <!-- Welcome message for admin -->
 <div class="text-center">
 <h1>Welcome, Admin!</h1>
 <p class="text-muted">Use the menu in the top-right to manage Jewellery, Brands, and Products.</p>
 </div>
 <?php else: ?>
-<!-- Products section for logged-in customers -->
+<!-- Products section for all users (guests and customers) -->
 <div class="mt-3">
 	<!-- Search and Filters -->
 	<div class="row mb-4">
@@ -86,7 +80,7 @@ Cart
 <script src="js/cart.js" defer></script>
 
 <?php 
-// Include AI Chatbot for logged-in customers
+// Include AI Chatbot for logged-in customers only
 if (isset($_SESSION['user_id']) && !is_admin()): 
     $chat_context = 'home';
     include 'components/chat_widget.php';
@@ -98,7 +92,7 @@ let allProducts = [];
 let filteredProducts = [];
 
 $(document).ready(function(){
-<?php if (isset($_SESSION['user_id']) && !is_admin()): ?>
+<?php if (!is_admin()): ?>
 loadProducts();
 updateCartCount();
 loadFilters();
@@ -207,21 +201,8 @@ Add to Cart
 });
 $('#productsContainer').html(html);
 }
-src="js/interactions.js">
-<?php foreach ($products as $product): ?>
-	logInteraction(<?= $product['product_id'] ?>, 'view');
-<?php endforeach; ?>
-
-<div class="product-card" data-product-id="<?= $product['id'] ?>">
-    <h4><?= htmlspecialchars($product['name']) ?></h4>
-    <p><?= htmlspecialchars($product['price']) ?></p>
-
-    <button onclick="startARTryOn(<?= $product['id'] ?>)">
-        Try AR
-    </button>
-</div>
-logInteraction(<?= $product['id'] ?>, "view");
 </script>
-</script>
+
+<script src="js/interactions.js"></script>
 </body>
 </html>
