@@ -13,6 +13,8 @@ if (!is_logged_in()) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="../css/styles.css" rel="stylesheet">
     <style>
         .btn-tryon {
@@ -53,9 +55,16 @@ if (!is_logged_in()) {
     </style>
 </head>
 <body>
-    <div class="container">
+<div class="container">
         <div id="productDetail">
             <p style="text-align: center;">Loading product details...</p>
+        </div>
+        
+        <!-- Recommended Products Section -->
+        <div class="recommendations-section mt-5" id="recommendationsSection" style="display:none;">
+            <h3 class="mb-3"><i class="fas fa-star text-warning"></i> Recommended For You</h3>
+            <p class="text-muted small">Based on this product and your browsing history</p>
+            <div id="recommendationsContainer" class="row"></div>
         </div>
     </div>
 
@@ -168,8 +177,11 @@ if (!is_logged_in()) {
                 $(this).val(value);
             });
 
-            // Store product info for chatbot context
+// Store product info for chatbot context
             window.currentProduct = product;
+            
+            // Log the product view for recommendations
+            logProductView(product.product_id);
             
             // Initialize chatbot with product context
             if (window.chatbot) {
@@ -183,7 +195,78 @@ if (!is_logged_in()) {
                 });
             }
         }
-    </script>
+        
+        /**
+         * Log product view for recommendation tracking
+         */
+        function logProductView(productId) {
+            fetch('../actions/log_interaction.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `product_id=${productId}&action=view&duration=0`
+            }).catch(error => console.log('Failed to log product view'));
+            
+            // Load recommendations based on this product
+            loadRecommendationsForProduct(productId);
+        }
+        
+        /**
+         * Load recommendations based on current product
+         */
+        function loadRecommendationsForProduct(productId) {
+            $.getJSON(`../actions/get_recommendations_action.php?limit=4&current_product=${productId}`, function(data) {
+                if (data.status === 'success' && data.recommendations && data.recommendations.length > 0) {
+                    displayRecommendations(data.recommendations, productId);
+                }
+            }).fail(function() {
+                console.log('Could not load recommendations');
+            });
+        }
+        
+        /**
+         * Display recommendations
+         */
+        function displayRecommendations(products, excludeId) {
+            const container = $('#recommendationsContainer');
+            const section = $('#recommendationsSection');
+            
+            if (!products || products.length === 0) {
+                return;
+            }
+            
+            let html = '';
+            products.forEach(p => {
+                // Skip the current product
+                if (p.product_id == excludeId) return;
+                
+                const img = p.product_image ? 
+                    `<img src="../${p.product_image}" class="card-img-top" style="height:150px; object-fit:cover;" alt="${p.product_title}">` : 
+                    '<div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:150px;"><span class="text-muted">No Image</span></div>';
+                
+                html += `
+                <div class="col-md-3 mb-3">
+                    <div class="card h-100">
+                        ${img}
+                        <div class="card-body p-2">
+                            <h6 class="card-title" style="font-size:0.9rem;">${p.product_title}</h6>
+                            <p class="card-text"><strong>GHS ${parseFloat(p.product_price).toFixed(2)}</strong></p>
+                            <a href="single_product.php?id=${p.product_id}" class="btn btn-info btn-sm">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+            
+            if (html) {
+                container.html(html);
+                section.show();
+            }
+        }
+</script>
+    
+    <script src="../js/interactions.js"></script>
 
     <?php 
     // Include AI Chatbot for logged-in customers

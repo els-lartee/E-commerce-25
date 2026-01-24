@@ -8,6 +8,9 @@ header('Content-Type: application/json');
 $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 6;
 $limit = min(max($limit, 1), 20); // Ensure between 1 and 20
 
+// Get current product to exclude from recommendations
+$current_product = isset($_GET['current_product']) ? (int)$_GET['current_product'] : 0;
+
 // Get session ID
 $session_id = $_SESSION['session_id'] ?? '';
 
@@ -24,10 +27,8 @@ if (!$db) {
 
 $recommendations = [];
 
-// Strategy: Get products based on user's interaction history
-// 1. Find categories and brands from viewed products
-// 2. Find products from those categories/brands that user hasn't viewed
-// 3. Sort by popularity and recency
+// Build exclusion list
+$excludeProducts = [$current_product];
 
 // Get products the user has already interacted with (to exclude)
 $viewedProducts = [];
@@ -55,61 +56,103 @@ if ($user_id > 0) {
 }
 
 $viewedProducts = array_unique($viewedProducts);
-$excludeClause = !empty($viewedProducts) ? "AND p.product_id NOT IN (" . implode(',', $viewedProducts) . ")" : "";
+$excludeProducts = array_unique(array_merge($excludeProducts, $viewedProducts));
 
-// Get categories and brands from user's most viewed/interacted products
-$topCategories = [];
-$topBrands = [];
-
-$sql = "SELECT p.product_cat, p.product_brand, COUNT(ui.id) as interaction_count 
-        FROM user_interactions ui 
-        JOIN product p ON ui.product_id = p.product_id 
-        WHERE ui.session_id = ? 
-        GROUP BY p.product_cat, p.product_brand 
-        ORDER BY interaction_count DESC 
-        LIMIT 5";
-
-$stmt = $db->prepare($sql);
-$stmt->bind_param("s", $session_id);
-$stmt->execute();
-$result = $stmt->get_result();
-while ($row = $result->fetch_assoc()) {
-    if ($row['product_cat']) {
-        $topCategories[$row['product_cat']] = $row['interaction_count'];
-    }
-    if ($row['product_brand']) {
-        $topBrands[$row['product_brand']] = $row['interaction_count'];
+// Strategy 1: If viewing a specific product, recommend similar products (same category/brand)
+if ($current_product > 0) {
+    // Get the current product's category and brand
+    $sql = "SELECT product_cat, product_brand FROM product WHERE product_id = ?";
+    $stmt = $db->prepare($sql);
+    $stmt->bind_param("i", $current_product);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $currentProductInfo = $result->fetch_assoc();
+    $stmt->close();
+    
+    if ($currentProductInfo) {
+        $similarProducts = [];
+        
+        // Get products from the same category (higher priority)
+        if ($currentProductInfo['product_cat']) {
+            $sql = "SELECT p.*, j.name as cat_name, b.brand_name 
+                    FROM product p 
+                    LEFT JOIN jewellery j ON p.product_cat = j.id 
+                    LEFT JOIN brands b ON p.product_brand = b.brand_id 
+                    WHERE p.product_cat = ? 
+                      AND p.product_id NOT IN (" . implode(',', $excludeProducts) . ")
+                    ORDER BY p.product_id DESC 
+                    LIMIT ?";
+            
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param("ii", $currentProductInfo['product_cat'], $limit);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc()) {
+                $similarProducts[] = $row;
+            }
+            $stmt->close();
+        }
+        
+        // If we have similar products from category, use them
+        if (!empty($similarProducts)) {
+            $recommendations = $similarProducts;
+        }
     }
 }
-$stmt->close();
 
-// If user is logged in, also consider their interactions
-if ($user_id > 0) {
+// Strategy 2: Fall back to user's interaction-based recommendations
+if (empty($recommendations)) {
+    // Get categories and brands from user's most viewed/interacted products
+    $topCategories = [];
+    $topBrands = [];
+
     $sql = "SELECT p.product_cat, p.product_brand, COUNT(ui.id) as interaction_count 
             FROM user_interactions ui 
             JOIN product p ON ui.product_id = p.product_id 
-            WHERE ui.user_id = ? 
+            WHERE ui.session_id = ? 
             GROUP BY p.product_cat, p.product_brand 
             ORDER BY interaction_count DESC 
             LIMIT 5";
 
     $stmt = $db->prepare($sql);
-    $stmt->bind_param("i", $user_id);
+    $stmt->bind_param("s", $session_id);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
         if ($row['product_cat']) {
-            $topCategories[$row['product_cat']] = ($topCategories[$row['product_cat']] ?? 0) + $row['interaction_count'];
+            $topCategories[$row['product_cat']] = $row['interaction_count'];
         }
         if ($row['product_brand']) {
-            $topBrands[$row['product_brand']] = ($topBrands[$row['product_brand']] ?? 0) + $row['interaction_count'];
+            $topBrands[$row['product_brand']] = $row['interaction_count'];
         }
     }
     $stmt->close();
-}
 
-// If we have interaction history, recommend from top categories/brands
-if (!empty($topCategories) || !empty($topBrands)) {
+    // If user is logged in, also consider their interactions
+    if ($user_id > 0) {
+        $sql = "SELECT p.product_cat, p.product_brand, COUNT(ui.id) as interaction_count 
+                FROM user_interactions ui 
+                JOIN product p ON ui.product_id = p.product_id 
+                WHERE ui.user_id = ? 
+                GROUP BY p.product_cat, p.product_brand 
+                ORDER BY interaction_count DESC 
+                LIMIT 5";
+
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            if ($row['product_cat']) {
+                $topCategories[$row['product_cat']] = ($topCategories[$row['product_cat']] ?? 0) + $row['interaction_count'];
+            }
+            if ($row['product_brand']) {
+                $topBrands[$row['product_brand']] = ($topBrands[$row['product_brand']] ?? 0) + $row['interaction_count'];
+            }
+        }
+        $stmt->close();
+    }
+
     // Build weighted SQL based on user preferences
     $weights = [];
     $params = [];
@@ -130,13 +173,12 @@ if (!empty($topCategories) || !empty($topBrands)) {
     }
     
     if (!empty($weights)) {
-        // Priority 1: Products from user's preferred categories/brands
         $sql = "SELECT p.*, j.name as cat_name, b.brand_name,
                 (CASE " . implode(' ', $weights) . " ELSE 0 END) as preference_score
                 FROM product p 
                 LEFT JOIN jewellery j ON p.product_cat = j.id 
                 LEFT JOIN brands b ON p.product_brand = b.brand_id 
-                WHERE p.product_id > 0 $excludeClause
+                WHERE p.product_id NOT IN (" . implode(',', $excludeProducts) . ")
                 ORDER BY preference_score DESC, p.product_id DESC 
                 LIMIT ?";
         
@@ -157,7 +199,7 @@ if (!empty($topCategories) || !empty($topBrands)) {
 // If we don't have enough recommendations, fill with popular products
 if (count($recommendations) < $limit) {
     $needed = $limit - count($recommendations);
-    $existingIds = array_column($recommendations, 'product_id');
+    $existingIds = array_merge($excludeProducts, array_column($recommendations, 'product_id'));
     
     if (!empty($existingIds)) {
         $excludeClause = "AND p.product_id NOT IN (" . implode(',', $existingIds) . ")";
@@ -187,10 +229,13 @@ if (count($recommendations) < $limit) {
 
 // If still empty (new user with no interactions), show newest products
 if (empty($recommendations)) {
+    $existingIds = !empty($excludeProducts) ? "AND p.product_id NOT IN (" . implode(',', $excludeProducts) . ")" : "";
+    
     $sql = "SELECT p.*, j.name as cat_name, b.brand_name 
             FROM product p 
             LEFT JOIN jewellery j ON p.product_cat = j.id 
             LEFT JOIN brands b ON p.product_brand = b.brand_id 
+            WHERE p.product_id > 0 $existingIds
             ORDER BY p.product_id DESC 
             LIMIT ?";
     
